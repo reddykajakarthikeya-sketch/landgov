@@ -11,6 +11,12 @@ interface AuthContextType {
   register: (data: any) => Promise<void>;
   logout: () => void;
   switchRole: (role: UserRole) => Promise<void>;
+  isPublicUser: boolean;
+  isResearcher: boolean;
+  isPolicymaker: boolean;
+  isInstitutionAdmin: boolean;
+  isPlatformAdmin: boolean;
+  canAccessModule: (moduleTab: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -152,6 +158,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const role = user?.role || 'public_user';
+  const isPublicUser = role === 'public_user';
+  const isResearcher = role === 'researcher';
+  const isPolicymaker = role === 'policymaker';
+  const isInstitutionAdmin = role === 'institution_admin';
+  const isPlatformAdmin = role === 'platform_admin';
+
+  const canAccessModule = (tab: string): boolean => {
+    if (isPlatformAdmin) return true;
+    if (isPolicymaker) {
+      return !['admin-audit'].includes(tab);
+    }
+    if (isInstitutionAdmin) {
+      return ['dashboard', 'repository', 'ai-assistant', 'gis-explorer', 'analytics', 'simulation', 'projects', 'grants', 'scope-of-study', 'tech-stack', 'admin-users'].includes(tab);
+    }
+    if (isResearcher) {
+      return ['dashboard', 'repository', 'ai-assistant', 'gis-explorer', 'analytics', 'simulation', 'projects', 'grants', 'scope-of-study', 'tech-stack'].includes(tab);
+    }
+    // public_user
+    return ['dashboard', 'repository', 'ai-assistant', 'gis-explorer', 'scope-of-study', 'tech-stack'].includes(tab);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -162,7 +190,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        switchRole
+        switchRole,
+        isPublicUser,
+        isResearcher,
+        isPolicymaker,
+        isInstitutionAdmin,
+        isPlatformAdmin,
+        canAccessModule
       }}
     >
       {children}

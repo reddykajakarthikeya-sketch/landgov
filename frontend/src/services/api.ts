@@ -62,7 +62,9 @@ export const api = {
 
   // Dashboard
   async getDashboardOverview() {
-    const res = await fetch(`${API_BASE}/dashboard/overview`);
+    const res = await fetch(`${API_BASE}/dashboard/overview`, {
+      headers: getAuthHeaders()
+    });
     return res.json();
   },
 
@@ -165,13 +167,17 @@ export const api = {
   },
 
   async getSavedScenarios() {
-    const res = await fetch(`${API_BASE}/simulation/scenarios`);
+    const res = await fetch(`${API_BASE}/simulation/scenarios`, {
+      headers: getAuthHeaders()
+    });
     return res.json();
   },
 
   // Projects
   async getProjects(): Promise<ResearchProject[]> {
-    const res = await fetch(`${API_BASE}/projects`);
+    const res = await fetch(`${API_BASE}/projects`, {
+      headers: getAuthHeaders()
+    });
     return res.json();
   },
 
@@ -271,6 +277,65 @@ export const api = {
 
   async getTechStack(): Promise<TechStackItem[]> {
     const res = await fetch(`${API_BASE}/metadata/tech-stack`);
+    return res.json();
+  },
+
+  // Role Management & Administration
+  async getUsers() {
+    const res = await fetch(`${API_BASE}/auth/users`, {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Failed to fetch users' }));
+      throw new Error(err.detail || 'Access denied');
+    }
+    return res.json();
+  },
+
+  async toggleUserStatus(userId: number) {
+    const res = await fetch(`${API_BASE}/auth/users/${userId}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Failed to update user status' }));
+      throw new Error(err.detail || 'Operation failed');
+    }
+    return res.json();
+  },
+
+  async getAuditLogs(limit: number = 50) {
+    const res = await fetch(`${API_BASE}/auth/audit-logs?limit=${limit}`, {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Failed to fetch audit logs' }));
+      throw new Error(err.detail || 'Access denied');
+    }
+    return res.json();
+  },
+
+  async getAdminGrantApplications() {
+    const res = await fetch(`${API_BASE}/grants/admin/applications`, {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Failed to fetch grant applications' }));
+      throw new Error(err.detail || 'Access denied');
+    }
+    return res.json();
+  },
+
+  async updateGrantApplicationStatus(appId: number, status: string) {
+    const res = await fetch(`${API_BASE}/grants/applications/${appId}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Failed to update grant status' }));
+      throw new Error(err.detail || 'Operation failed');
+    }
     return res.json();
   }
 };

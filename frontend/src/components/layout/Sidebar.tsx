@@ -23,9 +23,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) => {
-  const { user } = useAuth();
+  const { user, canAccessModule, isPlatformAdmin, isInstitutionAdmin } = useAuth();
 
-  const navSections = [
+  const allSections = [
     {
       title: 'CORE PLATFORM',
       items: [
@@ -57,8 +57,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
         { id: 'tech-stack', label: 'Suggested Tech Stack', icon: Cpu, badge: 'DoLR' },
         { id: 'integrations', label: 'API Integrations', icon: Network, badge: 'Bhuvan/NJDG' },
       ]
+    },
+    {
+      title: 'ADMINISTRATION',
+      items: [
+        { id: 'admin-users', label: isInstitutionAdmin ? 'Member Directory' : 'User Accounts & Roles', icon: Users2, badge: 'RBAC' },
+        { id: 'admin-audit', label: 'System Audit Logs', icon: ShieldCheck, badge: 'Security' },
+      ]
     }
   ];
+
+  // Filter sections and items based on role access
+  const navSections = allSections
+    .map(section => ({
+      ...section,
+      items: section.items.filter(item => canAccessModule(item.id))
+    }))
+    .filter(section => section.items.length > 0);
 
   return (
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 min-h-[calc(100vh-68px)] border-r border-slate-800 select-none">

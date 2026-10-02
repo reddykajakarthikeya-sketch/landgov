@@ -378,10 +378,14 @@ class AuditTestRunner:
             # 6.3 Save scenario
             save_payload = dict(modified_inputs)
             save_payload["title"] = "High Urbanization Stress Scenario"
+            auth_headers = {"Content-Type": "application/json"}
+            res_token = self.tokens.get("researcher") or self.tokens.get("policymaker")
+            if res_token:
+                auth_headers["Authorization"] = f"Bearer {res_token}"
             req_save = urllib.request.Request(
                 f"{BASE_URL}/simulation/scenarios",
                 data=json.dumps(save_payload).encode(),
-                headers={"Content-Type": "application/json"}
+                headers=auth_headers
             )
             resp_save = urllib.request.urlopen(req_save)
             saved_obj = json.loads(resp_save.read().decode())
@@ -392,8 +396,12 @@ class AuditTestRunner:
                 self.log(step, "Scenario Persistence", "FAIL", "Failed to obtain scenario ID")
 
             # 6.4 Reopen saved scenario
-            req_list = urllib.request.urlopen(f"{BASE_URL}/simulation/scenarios")
-            sc_list = json.loads(req_list.read().decode())
+            req_list = urllib.request.Request(
+                f"{BASE_URL}/simulation/scenarios",
+                headers=auth_headers
+            )
+            resp_list = urllib.request.urlopen(req_list)
+            sc_list = json.loads(resp_list.read().decode())
             target_sc = next((s for s in sc_list if s["id"] == saved_id), None)
             if target_sc and target_sc["urban_expansion_rate_pct"] == 8.5:
                 self.log(step, "Reopen & Reload Saved Scenario", "PASS", f"Retrieved scenario #{saved_id} with exact saved parameters")

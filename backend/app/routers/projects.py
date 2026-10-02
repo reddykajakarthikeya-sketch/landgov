@@ -23,8 +23,31 @@ from app.auth import get_current_user, require_role
 router = APIRouter(prefix="/projects", tags=["Collaborative Research Workspace"])
 
 @router.get("")
-def list_projects(db: Session = Depends(get_db)):
-    projects = db.query(ResearchProject).order_by(desc(ResearchProject.created_at)).all()
+def list_projects(
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user)
+):
+    query = db.query(ResearchProject)
+    
+    # Role-based query scoping
+    if current_user:
+        if current_user.role == "institution_admin":
+            # Institution Admin only sees projects of their institution
+            term = current_user.organization.split()[0] if current_user.organization else "National"
+            query = query.filter(ResearchProject.institution.ilike(f"%{term}%"))
+        elif current_user.role == "researcher":
+            # Researcher sees their own projects plus institutional collaborations
+            term = current_user.organization.split()[0] if current_user.organization else "IIT"
+            query = query.filter(
+                (ResearchProject.lead_researcher_id == current_user.id) |
+                (ResearchProject.institution.ilike(f"%{term}%"))
+            )
+        elif current_user.role == "public_user":
+            # Public user only sees active public projects
+            query = query.filter(ResearchProject.status == "active")
+        # Policymakers and Platform Admins see all projects for national oversight
+
+    projects = query.order_by(desc(ResearchProject.created_at)).all()
     results = []
     for p in projects:
         results.append({
@@ -36,6 +59,7 @@ def list_projects(db: Session = Depends(get_db)):
             "status": p.status,
             "budget_inr": p.budget_inr,
             "target_state": p.target_state,
+            "lead_researcher_id": p.lead_researcher_id,
             "lead_researcher_name": p.lead_researcher.full_name if p.lead_researcher else "Principal Investigator",
             "tasks_count": len(p.tasks),
             "completed_tasks": sum(1 for t in p.tasks if t.status == "completed"),
@@ -130,10 +154,23 @@ def get_project_detail(id: int, db: Session = Depends(get_db)):
     }
 
 @router.post("/{id}/tasks", status_code=201)
-def add_project_task(id: int, task_in: TaskCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def add_project_task(
+    id: int, 
+    task_in: TaskCreate, 
+    db: Session = Depends(get_db), 
+    current_user: Optional[User] = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if current_user.role == "public_user":
+        raise HTTPException(status_code=403, detail="Access denied: Public users cannot modify project tasks.")
+        
     p = db.query(ResearchProject).filter(ResearchProject.id == id).first()
     if not p:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    if current_user.role == "researcher" and p.lead_researcher_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied: Only the designated Lead Researcher can modify tasks for this project.")
         
     task = ProjectTask(
         project_id=p.id,
@@ -150,7 +187,17 @@ def add_project_task(id: int, task_in: TaskCreate, db: Session = Depends(get_db)
     return {"message": "Task added", "id": task.id}
 
 @router.post("/{id}/tasks/{task_id}/toggle")
-def toggle_task_status(id: int, task_id: int, db: Session = Depends(get_db)):
+def toggle_task_status(
+    id: int, 
+    task_id: int, 
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if current_user.role == "public_user":
+        raise HTTPException(status_code=403, detail="Access denied: Public users cannot toggle task progress.")
+        
     task = db.query(ProjectTask).filter(ProjectTask.id == task_id, ProjectTask.project_id == id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")

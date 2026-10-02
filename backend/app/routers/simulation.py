@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models.entities import PolicyScenario, User, AuditLog
 from app.schemas import PolicyScenarioCreate, PolicyScenarioResponse
 from app.services.simulation_engine import PolicySimulationEngine
-from app.auth import get_current_user
+from app.auth import get_current_user, require_role
 
 router = APIRouter(prefix="/simulation", tags=["Policy Simulation Lab"])
 
@@ -31,8 +31,9 @@ def run_simulation_calculation(params: PolicyScenarioCreate):
 def save_scenario(
     scenario_in: PolicyScenarioCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_role(["researcher", "institution_admin", "policymaker", "platform_admin"]))
 ):
+
     calc = PolicySimulationEngine.calculate_scenario(
         state=scenario_in.state,
         base_year=scenario_in.base_year,
@@ -77,8 +78,23 @@ def save_scenario(
     }
 
 @router.get("/scenarios")
-def list_scenarios(db: Session = Depends(get_db)):
-    scenarios = db.query(PolicyScenario).order_by(PolicyScenario.created_at.desc()).limit(20).all()
+def list_scenarios(
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user)
+):
+    query = db.query(PolicyScenario)
+    if current_user:
+        if current_user.role in ["policymaker", "platform_admin"]:
+            # Government officials & Admins see all policy scenarios
+            pass
+        elif current_user.role in ["researcher", "institution_admin"]:
+            # Researchers see their own scenarios plus national benchmarks
+            query = query.filter((PolicyScenario.user_id == current_user.id) | (PolicyScenario.user_id == None))
+        elif current_user.role == "public_user":
+            # Public user only sees national benchmarks
+            query = query.filter(PolicyScenario.user_id == None)
+
+    scenarios = query.order_by(PolicyScenario.created_at.desc()).limit(20).all()
     results = []
     for s in scenarios:
         results.append({

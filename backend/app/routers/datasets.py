@@ -3,7 +3,8 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models.entities import DatasetItem
+from app.models.entities import DatasetItem, User, AuditLog
+from app.auth import get_current_user
 from app.services.gis_service import get_all_states, get_watershed_points, get_infrastructure_projects
 
 router = APIRouter(prefix="/datasets", tags=["Dataset Management"])
@@ -87,3 +88,71 @@ def get_dataset_details(id: int, db: Session = Depends(get_db)):
         "import_date": d.created_at.strftime("%Y-%m-%d"),
         "preview_records": preview_records
     }
+
+@router.post("", status_code=201)
+def create_dataset(
+    dataset_in: dict,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if current_user.role != "platform_admin":
+        raise HTTPException(status_code=403, detail="Access denied: Only Platform Administrators can register official system datasets.")
+
+    ds = DatasetItem(
+        name=dataset_in["name"],
+        description=dataset_in["description"],
+        category=dataset_in["category"],
+        source_agency=dataset_in["source_agency"],
+        file_format=dataset_in["file_format"],
+        record_count=dataset_in.get("record_count", 0),
+        geographic_coverage=dataset_in.get("geographic_coverage", "National"),
+        temporal_coverage=dataset_in.get("temporal_coverage", "2024-2026"),
+        fields_schema=json.dumps(dataset_in.get("fields", [])),
+        validation_status="VERIFIED",
+        integration_status="FULLY_INTEGRATED",
+        is_sih_official=dataset_in.get("is_sih_official", False)
+    )
+    db.add(ds)
+    db.commit()
+    db.refresh(ds)
+
+    db.add(AuditLog(
+        user_id=current_user.id,
+        user_email=current_user.email,
+        action="DATASET_REGISTERED",
+        module="Datasets",
+        details=f"Dataset '{ds.name}' registered by platform admin"
+    ))
+    db.commit()
+
+    return {"message": "Dataset registered successfully", "id": ds.id}
+
+@router.put("/{id}/status")
+def update_dataset_status(
+    id: int,
+    status_update: dict,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if current_user.role != "platform_admin":
+        raise HTTPException(status_code=403, detail="Access denied: Only Platform Administrators can verify or approve datasets.")
+
+    ds = db.query(DatasetItem).filter(DatasetItem.id == id).first()
+    if not ds:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    ds.validation_status = status_update.get("validation_status", ds.validation_status)
+    ds.integration_status = status_update.get("integration_status", ds.integration_status)
+    db.add(AuditLog(
+        user_id=current_user.id,
+        user_email=current_user.email,
+        action="DATASET_STATUS_UPDATED",
+        module="Datasets",
+        details=f"Dataset #{ds.id} status updated to {ds.validation_status}/{ds.integration_status}"
+    ))
+    db.commit()
+    return {"message": "Dataset status updated", "id": ds.id}

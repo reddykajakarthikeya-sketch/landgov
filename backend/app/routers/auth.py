@@ -85,3 +85,104 @@ def get_me(current_user: User = Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return current_user
+
+@router.get("/users")
+def list_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+        
+    if current_user.role not in ["platform_admin", "institution_admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: User directory is restricted to Platform Administrators and Institution Administrators."
+        )
+    
+    # Institution Admins only see members of their own institution
+    if current_user.role == "institution_admin":
+        term = current_user.organization.split()[0] if current_user.organization else "National"
+        users = db.query(User).filter(User.organization.ilike(f"%{term}%")).all()
+    else:
+        # Platform Admin sees all users across the nation
+        users = db.query(User).order_by(User.id.asc()).all()
+
+    return [
+        {
+            "id": u.id,
+            "email": u.email,
+            "full_name": u.full_name,
+            "role": u.role,
+            "organization": u.organization,
+            "department": u.department,
+            "is_active": u.is_active,
+            "created_at": u.created_at.strftime("%Y-%m-%d")
+        }
+        for u in users
+    ]
+
+@router.put("/users/{user_id}/status")
+def toggle_user_status(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+        
+    if current_user.role != "platform_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Only Platform Administrators can alter user account authorization status."
+        )
+        
+    target_user = db.query(User).filter(User.id == user_id).first()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    target_user.is_active = not target_user.is_active
+    db.add(AuditLog(
+        user_id=current_user.id,
+        user_email=current_user.email,
+        action="USER_STATUS_TOGGLED",
+        module="Auth",
+        details=f"User {target_user.email} active status set to {target_user.is_active}"
+    ))
+    db.commit()
+    db.refresh(target_user)
+    
+    return {
+        "message": f"User status updated to {'active' if target_user.is_active else 'deactivated'}",
+        "user_id": target_user.id,
+        "is_active": target_user.is_active
+    }
+
+@router.get("/audit-logs")
+def get_audit_logs(
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+        
+    if current_user.role != "platform_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: System Audit Logs are strictly restricted to Platform Administrators."
+        )
+        
+    logs = db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(limit).all()
+    return [
+        {
+            "id": l.id,
+            "action": l.action,
+            "module": l.module,
+            "user_email": l.user_email,
+            "details": l.details,
+            "ip_address": l.ip_address,
+            "created_at": l.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for l in logs
+    ]

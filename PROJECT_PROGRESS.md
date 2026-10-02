@@ -19,10 +19,11 @@
 ## Live System Endpoints
 | Service | URL | Status | Details |
 | :--- | :--- | :--- | :--- |
-| **Public Live Tunnel** | `https://patches-chairs-entrance-grove.trycloudflare.com` | 🟢 Online | Zero-password external access for jury & team testing |
+| **Public Live Tunnel** | `https://second-arrived-mails-mountain.trycloudflare.com` | 🟢 Online | Zero-password external access for jury & team testing |
 | **Frontend Web App** | `http://127.0.0.1:5173/` | 🟢 Online | React 19, TypeScript, Tailwind CSS v4, Recharts, Leaflet |
 | **Backend REST API** | `http://127.0.0.1:8000/` | 🟢 Online | Python 3.14, FastAPI, SQLAlchemy, SQLite/PostgreSQL |
-| **OpenAPI / Swagger** | `http://127.0.0.1:8000/docs` | 🟢 Online | Interactive API documentation for all 13 modules |
+| **OpenAPI / Swagger** | `http://127.0.0.1:8000/docs` | 🟢 Online | Interactive API documentation for all 15 endpoints |
+| **Role Dashboard & RBAC Suite** | `backend/tests/test_role_dashboards.py` | 🟢 Passed (100%) | Verified all 5 roles, tailored KPIs, 0 leakage, HTTP 401/403 guards |
 | **SIH Demonstration Audit** | `backend/tests/test_sih_demo_workflow.py` | 🟢 Passed (36/36) | 100% assertions passed across all 6 steps & E2E workflow |
 | **Full Audit Report** | `SIH_DEMO_TEST_REPORT.md` | 🟢 Completed | Detailed defect logs, resolutions & provenance audit |
 
@@ -87,7 +88,38 @@
 - [x] Automated test suite (`backend/tests/test_platform.py`) executing and passing 100% of assertions.
 - [x] Comprehensive `README.md` and single-click launcher `run_app.py`.
 
+### Phase 8: Role-Based Dashboards & Strict Backend RBAC Enforcement
+- [x] **Dynamic Role Command Center Hero:** In `backend/app/routers/dashboard.py`, `GET /api/dashboard/overview` dynamically recognizes authenticated JWT credentials, tailoring the command center banner, badge, headline, and quick action shortcuts for each role.
+- [x] **Shared National Indicators Consistency:** Guaranteed 100% consistency across all 5 roles for shared national statistics (130 publications, 5 datasets, 48 institutions, 28-state DILRMP indicators, land-use trends, and dispute breakdowns).
+- [x] **Public Citizen (`public_user`):**
+  - Displays open publications (130+), national RoR digitization (97.8%), cadastral geo-referencing (93.0%), and open spatial datasets (5).
+  - Quick access to Public GIS Explorer, Open Research Repository, National Analytics, and Platform Technical Stack.
+  - Strict backend blockage from private workspaces, scenario creation, grant submissions, and administration (returns HTTP 401/403).
+- [x] **Academic Researcher (`researcher`):**
+  - Tailored KPIs: My Active Research Projects (2), Pending Tasks (5), Submitted Proposals (1), Saved Policy Scenarios (1).
+  - Interactive Research Workspace panel displaying personal active projects, due dates, milestones, and actionable task checklist with instant completion toggles.
+  - Quick action launchpad for AI Literature Review, Collaborative Workspace, Simulation Lab, and Grant Applications.
+  - Backend query scoping ensures researchers only see their own projects and institutional collaborations.
+- [x] **Government Policymaker (`policymaker`):**
+  - Tailored KPIs: State Intervention Hotspots (9), Acquisition Delay Corridors (3), Pending Grant Sanctions (2), Active Policy Scenarios (4).
+  - Executive State Intervention Watchlist (Nagaland, Bihar, Assam, Meghalaya, etc.), High-Risk Infrastructure Bottlenecks queue, and Grant Sanctions Queue with direct sanction action.
+  - Quick action shortcuts to Policy Simulation Lab, State Performance Matrix, Corridor Delays Analytics, and Grant Review.
+- [x] **Institution Administrator (`institution_admin`):**
+  - Tailored KPIs: Institutional Research Projects (3), Affiliated Members (2), Institutional Proposals (1), Consortium Progress (88%).
+  - Institutional Management Console displaying institute-specific projects, faculty/scholar roster (e.g. NIRDPR / IIT Delhi), and institutional endorsement pipeline.
+  - Scoped database queries prevent institutional data leakage across academic institutions.
+- [x] **Platform Administrator (`platform_admin`):**
+  - Tailored KPIs: Total Registered Users (7), Verified Datasets (5), Security Audit Events (88+), System Gateway Health (99.98%).
+  - Dedicated User Accounts & Role Management interface (`/admin-users`) with search, role filters, and real-time activation status toggles (`PUT /api/auth/users/{id}/status`).
+  - Dedicated Security Audit Log Console (`/admin-audit`) with live event streaming, actor tracking, IP addresses, and module filters.
+  - Live infrastructure health cards for Auth Service, Spatial GIS Engine, RAG AI Pipeline, and PostgreSQL Database.
+- [x] **Frontend Route Protection & Fallback:** `App.tsx` and `Sidebar.tsx` dynamically evaluate role permissions via `canAccessModule()`, hiding private navigation items and displaying an informative "Restricted Access Module" dialog with quick role-switching when an unauthorized URL is accessed.
+- [x] **Comprehensive Automated Verification (`backend/tests/test_role_dashboards.py`):**
+  - 100% of assertions passed across all 5 roles.
+  - Validated zero data leakage between roles.
+  - Verified HTTP 401/403 enforcement across all restricted endpoints.
+
 ---
 
 ## Blockers & Risks
-- **None.** The application has been built from scratch, tested end-to-end, and is actively serving requests.
+- **None.** All 8 phases are fully implemented, verified with automated test suites, and serving live on the public tunnel.
