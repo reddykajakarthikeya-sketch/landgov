@@ -8,6 +8,19 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    {
+      name: 'redirect-root-to-base',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === '/' || req.url === '') {
+            res.writeHead(302, { Location: '/landgov/' });
+            res.end();
+            return;
+          }
+          next();
+        });
+      }
+    }
   ],
   server: {
     host: true, // Listen on all network interfaces (0.0.0.0)
