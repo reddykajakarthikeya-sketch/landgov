@@ -24,4 +24,11 @@ class Settings:
     # Raw SIH dataset path
     SIH_RAW_DATASET_DIR: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "raw_dataset"))
 
+    # CORS & Deployment Configuration
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://reddykajakarthikeya-sketch.github.io")
+    CORS_ORIGINS: str = os.getenv(
+        "CORS_ORIGINS", 
+        "https://reddykajakarthikeya-sketch.github.io,http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173"
+    )
+
 settings = Settings()

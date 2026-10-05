@@ -70,7 +70,7 @@ export const APIIntegrations: React.FC = () => {
         </div>
         <div className="flex items-center space-x-2 shrink-0">
           <a
-            href="/docs"
+            href={api.getDocsUrl()}
             target="_blank"
             rel="noreferrer"
             className="btn-primary-cta px-4 py-2.5 text-xs inline-flex items-center gap-2 shadow-lg"

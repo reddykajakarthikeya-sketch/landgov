@@ -11,7 +11,38 @@ import {
   UserRole
 } from '../types';
 
-const API_BASE = '/api';
+// Centralized environment-driven API Base Configuration
+// In development: defaults to '/api' (proxied via Vite dev server to local FastAPI)
+// In production: uses import.meta.env.VITE_API_URL (e.g., https://landgov-backend.onrender.com)
+const RAW_API_URL = (import.meta.env.VITE_API_URL || '').trim();
+const API_BASE = RAW_API_URL
+  ? (RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/+$/, '')}/api`)
+  : '/api';
+
+export function getApiBaseUrl(): string {
+  return API_BASE;
+}
+
+export function getDocsUrl(): string {
+  if (RAW_API_URL) {
+    const root = RAW_API_URL.replace(/\/api\/?$/, '');
+    return `${root}/docs`;
+  }
+  return '/docs';
+}
+
+function buildUrl(endpoint: string): string {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${API_BASE}${cleanEndpoint}`;
+}
+
+function buildUrlObject(endpoint: string): URL {
+  const full = buildUrl(endpoint);
+  if (full.startsWith('http://') || full.startsWith('https://')) {
+    return new URL(full);
+  }
+  return new URL(full, window.location.origin);
+}
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem('token');
@@ -25,6 +56,9 @@ function getAuthHeaders(): HeadersInit {
 }
 
 export const api = {
+  getDocsUrl,
+  getApiBaseUrl,
+
   // Auth
   async login(email: string, password: string) {
     const res = await fetch(`${API_BASE}/auth/login`, {
@@ -70,7 +104,7 @@ export const api = {
 
   // Repository
   async getResources(params?: { search?: string; domain?: string; resource_type?: string; is_sih_official?: boolean; sort_by?: string; page?: number; limit?: number }) {
-    const url = new URL(`${window.location.origin}${API_BASE}/repository/resources`);
+    const url = buildUrlObject('/repository/resources');
     if (params) {
       if (params.search) url.searchParams.set('search', params.search);
       if (params.domain) url.searchParams.set('domain', params.domain);

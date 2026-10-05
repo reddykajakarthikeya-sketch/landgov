@@ -27,10 +27,32 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Configure CORS
+# Configure CORS for Production and Local Development
+allowed_origins_set = {
+    "https://reddykajakarthikeya-sketch.github.io",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+}
+
+if settings.FRONTEND_URL:
+    for origin in settings.FRONTEND_URL.split(","):
+        cleaned = origin.strip().rstrip("/")
+        if cleaned:
+            allowed_origins_set.add(cleaned)
+
+if settings.CORS_ORIGINS:
+    for origin in settings.CORS_ORIGINS.split(","):
+        cleaned = origin.strip().rstrip("/")
+        if cleaned:
+            allowed_origins_set.add(cleaned)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=sorted(list(allowed_origins_set)),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

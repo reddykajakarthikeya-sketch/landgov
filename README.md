@@ -290,6 +290,46 @@ python -m pytest backend/tests/test_platform.py -v
 
 ---
 
+## 12. Deployment Guide
+
+### Architecture Overview
+- **Frontend:** Hosted on **GitHub Pages** at `https://reddykajakarthikeya-sketch.github.io/landgov/` via GitHub Actions (`.github/workflows/deploy-frontend.yml`).
+- **Backend:** Hosted on **Render** (or any container PaaS) running FastAPI with Uvicorn ASGI on `0.0.0.0:$PORT`.
+- **Database:** Production-ready for **PostgreSQL** (with automated fallback to SQLite for local development).
+- **Local Dev:** `npm run dev` (Vite) + `python run.py` (FastAPI), with automatic local reverse proxying.
+
+### 1. Frontend: GitHub Pages Setup
+1. In your GitHub repository, go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, select **GitHub Actions**.
+3. Under **Settings → Secrets and variables → Actions → Variables**, add:
+   - `VITE_API_URL`: Your deployed backend URL (e.g., `https://landgov-backend.onrender.com`).
+4. On every push to `main` (or via manual trigger in **Actions → Deploy Frontend to GitHub Pages**), the frontend will build and deploy automatically to:
+   `https://reddykajakarthikeya-sketch.github.io/landgov/`
+
+### 2. Backend: Render Deployment Setup
+1. Create a **New Web Service** on [Render](https://render.com) connected to this repository (or use the provided `render.yaml`).
+2. Set configuration:
+   - **Root Directory:** (leave blank or set to repository root)
+   - **Environment:** `Python 3`
+   - **Build Command:** `pip install -r backend/requirements.txt`
+   - **Start Command:** `cd backend && python -m app.seed_data && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+3. Add Environment Variables in Render:
+   - `SECRET_KEY`: Set a secure random string (e.g. `openssl rand -hex 32`).
+   - `FRONTEND_URL`: `https://reddykajakarthikeya-sketch.github.io`
+   - `CORS_ORIGINS`: `https://reddykajakarthikeya-sketch.github.io,https://reddykajakarthikeya-sketch.github.io/landgov,http://localhost:5173,http://127.0.0.1:5173`
+   - `DATABASE_URL`: *(Optional)* Your PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/landgov`). If omitted, uses local SQLite database.
+
+### 3. Key Environment Variables Reference
+| Variable | Scope | Description | Example Value |
+| :--- | :--- | :--- | :--- |
+| `VITE_API_URL` | Frontend | Deployed backend URL (used by Vite at build time) | `https://landgov-backend.onrender.com` |
+| `FRONTEND_URL` | Backend | Allowed production frontend origin for CORS | `https://reddykajakarthikeya-sketch.github.io` |
+| `CORS_ORIGINS` | Backend | Comma-separated list of allowed CORS origins | `https://reddykajakarthikeya-sketch.github.io,http://localhost:5173` |
+| `DATABASE_URL` | Backend | PostgreSQL / SQLite database connection URL | `postgresql://user:pass@host:5432/landgov` |
+| `SECRET_KEY` | Backend | Cryptographic secret for signing JWT auth tokens | Secure 64-char random hexadecimal string |
+
+---
+
 ## 12. Pre-Seeded Demonstration Accounts
 
 All accounts use the unified demonstration password: **`Admin@1234`**
