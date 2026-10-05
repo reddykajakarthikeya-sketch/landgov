@@ -353,4 +353,11 @@ All accounts use the unified demonstration password: **`Admin@1234`**
 - **Competition:** Smart India Hackathon (SIH 2026)
 - **Problem Statement ID:** 26019
 - **Organization / Ministry:** Department of Land Resources (DoLR), Ministry of Rural Development (MoRD)
-- **Lead Developer:** Karthikeya (`karthikeya@gmail.com`)
+- **Lead Developer:**
+Karthikeya
+Pragnay 
+Cherisma 
+Priya 
+Anvitha 
+Harshit 
+(`karthikeya@gmail.com`)
