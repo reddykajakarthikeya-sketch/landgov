@@ -302,7 +302,7 @@ python -m pytest backend/tests/test_platform.py -v
 1. In your GitHub repository, go to **Settings → Pages**.
 2. Under **Build and deployment → Source**, select **GitHub Actions**.
 3. Under **Settings → Secrets and variables → Actions → Variables**, add:
-   - `VITE_API_URL`: Your deployed backend URL (e.g., `https://landgov-backend.onrender.com`).
+   - `VITE_API_URL`: Your deployed backend URL (`https://landgov-2.onrender.com`).
 4. On every push to `main` (or via manual trigger in **Actions → Deploy Frontend to GitHub Pages**), the frontend will build and deploy automatically to:
    `https://reddykajakarthikeya-sketch.github.io/landgov/`
 
@@ -323,7 +323,7 @@ python -m pytest backend/tests/test_platform.py -v
 ### 3. Key Environment Variables Reference
 | Variable | Scope | Description | Example Value |
 | :--- | :--- | :--- | :--- |
-| `VITE_API_URL` | Frontend | Deployed backend URL (used by Vite at build time) | `https://landgov-backend.onrender.com` |
+| `VITE_API_URL` | Frontend | Deployed backend URL (used by Vite at build time) | `https://landgov-2.onrender.com` |
 | `FRONTEND_URL` | Backend | Allowed production frontend origin for CORS | `https://reddykajakarthikeya-sketch.github.io` |
 | `CORS_ORIGINS` | Backend | Comma-separated list of allowed CORS origins | `https://reddykajakarthikeya-sketch.github.io,http://localhost:5173` |
 | `DATABASE_URL` | Backend | PostgreSQL / SQLite database connection URL | `postgresql://user:pass@host:5432/landgov` |

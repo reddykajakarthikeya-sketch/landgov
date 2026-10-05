@@ -315,7 +315,7 @@ export const ResearchRepository: React.FC<RepositoryProps> = ({
                     {t('repository.view_doc', isHi ? 'विवरण देखें' : 'View Details')}
                   </button>
                   <a
-                    href={`/api/repository/resources/${item.id}/download`}
+                    href={api.getResourceDownloadUrl(item.id)}
                     target="_blank"
                     rel="noreferrer"
                     className="p-1.5 text-[#F2F4EF] hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full transition flex items-center justify-center cursor-pointer"
@@ -457,7 +457,7 @@ export const ResearchRepository: React.FC<RepositoryProps> = ({
                   {isHi ? "बंद करें" : "Close"}
                 </button>
                 <a
-                  href={`/api/repository/resources/${selectedDoc.id}/download`}
+                  href={api.getResourceDownloadUrl(selectedDoc.id)}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-primary-cta px-4 py-1.5 text-xs flex items-center space-x-1 cursor-pointer font-medium"

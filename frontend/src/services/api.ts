@@ -13,10 +13,14 @@ import {
 
 // Centralized environment-driven API Base Configuration
 // In development: defaults to '/api' (proxied via Vite dev server to local FastAPI)
-// In production: uses import.meta.env.VITE_API_URL (e.g., https://landgov-backend.onrender.com)
-const RAW_API_URL = (import.meta.env.VITE_API_URL || '').trim();
-const API_BASE = RAW_API_URL
-  ? (RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/+$/, '')}/api`)
+// In production: uses import.meta.env.VITE_API_URL, defaulting to https://landgov-2.onrender.com
+const RAW_ENV_URL = (import.meta.env.VITE_API_URL || '').trim();
+const CLEAN_RAW_URL = (
+  RAW_ENV_URL || (import.meta.env.PROD ? 'https://landgov-2.onrender.com' : '')
+).replace(/\/+$/, '');
+
+const API_BASE = CLEAN_RAW_URL
+  ? (CLEAN_RAW_URL.endsWith('/api') ? CLEAN_RAW_URL : `${CLEAN_RAW_URL}/api`)
   : '/api';
 
 export function getApiBaseUrl(): string {
@@ -24,11 +28,15 @@ export function getApiBaseUrl(): string {
 }
 
 export function getDocsUrl(): string {
-  if (RAW_API_URL) {
-    const root = RAW_API_URL.replace(/\/api\/?$/, '');
+  if (CLEAN_RAW_URL) {
+    const root = CLEAN_RAW_URL.replace(/\/api$/, '');
     return `${root}/docs`;
   }
   return '/docs';
+}
+
+export function getResourceDownloadUrl(resourceId: number | string): string {
+  return `${API_BASE}/repository/resources/${resourceId}/download`;
 }
 
 function buildUrl(endpoint: string): string {
@@ -58,6 +66,7 @@ function getAuthHeaders(): HeadersInit {
 export const api = {
   getDocsUrl,
   getApiBaseUrl,
+  getResourceDownloadUrl,
 
   // Auth
   async login(email: string, password: string) {
