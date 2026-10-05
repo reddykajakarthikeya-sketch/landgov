@@ -6,9 +6,10 @@ class Settings:
     API_V1_STR: str = "/api"
     
     # Database URL: default to SQLite file inside backend directory, with PostgreSQL compatibility
+    _DEFAULT_DB_PATH: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "land_governance.db"))
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL", 
-        "sqlite:///./land_governance.db"
+        f"sqlite:///{_DEFAULT_DB_PATH.replace(os.sep, '/')}"
     )
     
     # JWT Auth

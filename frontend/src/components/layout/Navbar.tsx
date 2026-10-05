@@ -3,16 +3,17 @@ import {
   ShieldCheck, 
   Search, 
   Bell, 
-  User as UserIcon, 
   ChevronDown, 
-  Building2, 
-  ExternalLink,
-  CheckCircle2,
-  FileText,
-  LogIn,
-  LogOut
+  CheckCircle2, 
+  LogIn, 
+  LogOut, 
+  Languages, 
+  Menu, 
+  X,
+  Compass
 } from 'lucide-react';
 import { useAuth, DEMO_USERS } from '../../context/AuthContext';
+import { useTranslation } from '../../i18n';
 import { UserRole } from '../../types';
 import { LoginModal } from '../auth/LoginModal';
 
@@ -20,11 +21,21 @@ interface NavbarProps {
   onSearch?: (query: string) => void;
   currentTab: string;
   setCurrentTab: (tab: string) => void;
+  onToggleMobileMenu?: () => void;
+  mobileMenuOpen?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onSearch, currentTab, setCurrentTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  onSearch, 
+  currentTab, 
+  setCurrentTab,
+  onToggleMobileMenu,
+  mobileMenuOpen = false
+}) => {
   const { user, switchRole, logout } = useAuth();
+  const { t, language, setLanguage } = useTranslation();
   const [searchVal, setSearchVal] = useState('');
+  const [showSearchInput, setShowSearchInput] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -34,103 +45,219 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch, currentTab, setCurrent
     if (onSearch && searchVal.trim()) {
       onSearch(searchVal.trim());
       setCurrentTab('repository');
+      setShowSearchInput(false);
     }
   };
 
-  const roleLabels: Record<UserRole, { title: string; color: string; bg: string }> = {
-    platform_admin: { title: 'Platform Admin', color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
-    policymaker: { title: 'MoRD Policymaker', color: 'text-amber-800', bg: 'bg-amber-50 border-amber-200' },
-    institution_admin: { title: 'Institution Admin', color: 'text-blue-800', bg: 'bg-blue-50 border-blue-200' },
-    researcher: { title: 'Researcher', color: 'text-emerald-800', bg: 'bg-emerald-50 border-emerald-200' },
-    public_user: { title: 'Public / Citizen', color: 'text-slate-800', bg: 'bg-slate-100 border-slate-200' },
+  const roleLabels: Record<UserRole, { titleKey: string; defaultTitle: string; color: string; bg: string; dot: string }> = {
+    platform_admin: { titleKey: 'roles.platform_admin', defaultTitle: 'Platform Admin', color: 'text-[#F5F5F2]', bg: 'bg-white/10 border-white/20', dot: 'bg-[#B7E300]' },
+    policymaker: { titleKey: 'roles.policymaker', defaultTitle: 'MoRD Policymaker', color: 'text-[#E5E7E3]', bg: 'bg-white/10 border-white/20', dot: 'bg-[#C5A46D]' },
+    institution_admin: { titleKey: 'roles.institution_admin', defaultTitle: 'Institution Admin', color: 'text-[#E5E7E3]', bg: 'bg-white/10 border-white/20', dot: 'bg-[#78C8C8]' },
+    researcher: { titleKey: 'roles.researcher', defaultTitle: 'Researcher', color: 'text-[#E5E7E3]', bg: 'bg-white/10 border-white/20', dot: 'bg-[#B7E300]' },
+    public_user: { titleKey: 'roles.public_user', defaultTitle: 'Public / Citizen', color: 'text-[#A7ADA8]', bg: 'bg-white/5 border-white/10', dot: 'bg-[#6F7772]' },
   };
 
   const currentRoleInfo = user ? roleLabels[user.role] : roleLabels.public_user;
+  const currentRoleTitle = t(currentRoleInfo.titleKey, currentRoleInfo.defaultTitle);
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-xs">
+    <header className="sticky top-0 z-40 liquid-glass-elevated border-b border-white/10 shadow-xl backdrop-blur-2xl">
       {/* Top Government Masthead */}
-      <div className="bg-[#0a2540] text-white px-4 py-1.5 text-xs flex flex-wrap justify-between items-center border-b border-slate-800">
-        <div className="flex items-center space-x-3">
-          <span className="font-semibold tracking-wide text-amber-400">भारत सरकार | GOVERNMENT OF INDIA</span>
-          <span className="text-slate-400">|</span>
-          <span className="text-slate-200">ग्रामीण विकास मंत्रालय | Ministry of Rural Development</span>
-          <span className="text-slate-400">|</span>
-          <span className="text-slate-300">भूमि संसाधन विभाग (DoLR)</span>
+      <div className="bg-[#101313] text-[#F2F4EF] px-3 sm:px-6 py-1.5 text-xs flex flex-wrap justify-between items-center gap-2 border-b border-white/10">
+        <div className="flex items-center space-x-2 sm:space-x-3 text-[11px] sm:text-xs">
+          <span className="font-extrabold tracking-wider text-[#F5F5F2] flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B7E300]" />
+            <span>{language === 'hi' ? 'भारत सरकार' : 'GOVERNMENT OF INDIA'}</span>
+          </span>
+          <span className="text-[#6F7772] hidden sm:inline">|</span>
+          <span className="text-[#A7ADA8] hidden sm:inline font-medium">
+            {t('masthead.mord', 'Ministry of Rural Development')}
+          </span>
+          <span className="text-[#6F7772] hidden md:inline">|</span>
+          <span className="text-[#6F7772] hidden md:inline">
+            {t('masthead.dolr', 'Department of Land Resources (DoLR)')}
+          </span>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-1.5 bg-emerald-950/80 text-emerald-300 px-2 py-0.5 rounded text-[11px] font-medium border border-emerald-500/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>SIH 2026 Problem 26019: MoRD Official Dataset Verified</span>
+
+        <div className="flex items-center space-x-2 sm:space-x-3 ml-auto">
+          {/* SIH Status Badge with Acid Green Pulse */}
+          <div className="hidden lg:flex items-center space-x-1.5 bg-white/5 text-[#B7E300] px-2.5 py-0.5 rounded-full text-[11px] font-semibold border border-[#B7E300]/30 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B7E300] animate-pulse"></span>
+            <span>{t('masthead.dataset_verified', 'SIH 2026 Problem 26019: MoRD Official Dataset Verified')}</span>
           </div>
-          <span className="text-slate-400">|</span>
-          <span className="text-slate-300">English / हिन्दी</span>
+
+          <span className="text-[#6F7772] hidden sm:inline">|</span>
+
+          {/* Bilingual Language Switcher in Masthead */}
+          <div className="flex items-center bg-black/40 rounded-full p-0.5 text-[11px] font-medium border border-white/10">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-3 py-0.5 rounded-full transition-all cursor-pointer font-semibold ${
+                language === 'en'
+                  ? 'bg-gradient-to-r from-[#F5F5F2] to-[#C7CBC7] text-[#080A0A] shadow-xs'
+                  : 'text-[#A7ADA8] hover:text-[#F2F4EF]'
+              }`}
+              title="View in English"
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('hi')}
+              className={`px-3 py-0.5 rounded-full transition-all cursor-pointer font-semibold ${
+                language === 'hi'
+                  ? 'bg-gradient-to-r from-[#F5F5F2] to-[#C7CBC7] text-[#080A0A] shadow-xs'
+                  : 'text-[#A7ADA8] hover:text-[#F2F4EF]'
+              }`}
+              title="हिन्दी में देखें"
+            >
+              हिन्दी
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
-        {/* Brand & Emblem */}
-        <div 
-          onClick={() => setCurrentTab('dashboard')} 
-          className="flex items-center space-x-3 cursor-pointer select-none group"
-        >
-          <div className="w-10 h-10 rounded-full bg-amber-50 border-2 border-amber-600 flex items-center justify-center font-bold text-amber-700 shadow-xs text-xs tracking-tighter">
-            सत्यमेव<br/>जयते
-          </div>
-          <div>
-            <h1 className="text-base font-bold text-[#0a2540] leading-tight group-hover:text-amber-700 transition">
-              National Land Governance Platform
-            </h1>
-            <p className="text-[11px] text-slate-500 font-medium">
-              Research, Policy Innovation & Evidence-Based Land Administration (NDP-LG)
-            </p>
+      {/* Main Navigation Bar - Neo-Institutional Liquid Chrome */}
+      <div className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 sm:py-5 flex items-center justify-between gap-4">
+        {/* LEFT: Platform Logo / Name */}
+        <div className="flex items-center space-x-3.5">
+          {onToggleMobileMenu && (
+            <button
+              onClick={onToggleMobileMenu}
+              className="lg:hidden p-2 rounded-full liquid-glass-pill text-[#F2F4EF] hover:text-[#B7E300] transition cursor-pointer"
+              aria-label="Toggle Navigation Drawer"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5 text-[#C56A9A]" /> : <Menu className="w-5 h-5" />}
+            </button>
+          )}
+
+          <div 
+            onClick={() => setCurrentTab('dashboard')} 
+            className="flex items-center space-x-3 cursor-pointer select-none group"
+          >
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-b from-[#212626] to-[#0D1010] border border-white/25 text-[#F5F5F2] flex items-center justify-center font-bold shadow-lg text-[10px] sm:text-xs leading-none text-center group-hover:border-[#B7E300]/60 transition">
+              सत्यमेव<br/>जयते
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-sm sm:text-base font-bold tracking-tight text-[#F2F4EF] group-hover:text-white transition">
+                  {t('nav.title', 'National Land Governance Platform')}
+                </h1>
+                <span className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.2 rounded border border-[#B7E300]/40 text-[#B7E300] bg-[#B7E300]/10">
+                  NEO-V2
+                </span>
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-[#A7ADA8] font-medium hidden sm:block">
+                {t('nav.subtitle', 'Research, Policy Innovation & Evidence-Based Land Administration')}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Global Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-1 max-w-md mx-4">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search research papers, DILRMP data, land laws, policies..."
-              value={searchVal}
-              onChange={(e) => setSearchVal(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-300 rounded-md focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2540] focus:border-transparent text-slate-800 placeholder-slate-400 transition"
-            />
-          </div>
-        </form>
+        {/* CENTER: Main Navigation Links (Desktop) */}
+        <nav className="hidden xl:flex items-center space-x-1 liquid-glass-pill px-3 py-1.5 border border-white/10">
+          {[
+            { id: 'dashboard', label: language === 'hi' ? 'डैशबोर्ड' : 'Dashboard' },
+            { id: 'repository', label: language === 'hi' ? 'अनुसंधान' : 'Research' },
+            { id: 'gis-explorer', label: language === 'hi' ? 'जीआईएस' : 'GIS Explorer' },
+            { id: 'analytics', label: language === 'hi' ? 'नीति विश्लेषण' : 'Analytics' },
+            { id: 'simulation', label: language === 'hi' ? 'सिमुलेशन' : 'Simulation' },
+            { id: 'projects', label: language === 'hi' ? 'सहयोग' : 'Collaboration' },
+            { id: 'ai-assistant', label: language === 'hi' ? 'एआई सहायक' : 'AI Assistant' }
+          ].map((item) => {
+            const isActive = currentTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setCurrentTab(item.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition cursor-pointer flex items-center space-x-1.5 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-white/15 to-white/5 text-[#F5F5F2] font-semibold border border-white/20 shadow-xs'
+                    : 'text-[#A7ADA8] hover:text-[#F2F4EF] hover:bg-white/5'
+                }`}
+              >
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#B7E300]" />}
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
 
-        {/* User Role Switcher & Profile Actions */}
-        <div className="flex items-center space-x-3">
-          {/* Role Switcher Pill */}
+        {/* RIGHT: Search, Role Switcher & Actions */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Search Trigger */}
+          <div className="relative">
+            {showSearchInput ? (
+              <form onSubmit={handleSearchSubmit} className="flex items-center">
+                <input
+                  type="text"
+                  placeholder={language === 'hi' ? 'खोजें...' : 'Search...'}
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  autoFocus
+                  className="w-36 sm:w-48 pl-3 pr-8 py-1.5 text-xs liquid-glass-input rounded-full text-[#F2F4EF] placeholder-[#6F7772] border border-white/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSearchInput(false)}
+                  className="absolute right-2 text-[#A7ADA8] hover:text-white text-xs cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setShowSearchInput(true)}
+                className="p-2 text-[#A7ADA8] hover:text-[#F2F4EF] liquid-glass-pill rounded-full transition cursor-pointer"
+                title="Search Repository"
+                aria-label="Search"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Quick Mobile Language Switcher */}
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+            className="md:hidden flex items-center space-x-1 px-2.5 py-1 rounded-full liquid-glass-pill text-xs font-semibold text-[#F2F4EF] hover:bg-white/10"
+            title="Toggle Language (English / हिन्दी)"
+          >
+            <Languages className="w-3.5 h-3.5 text-[#B7E300]" />
+            <span>{language === 'en' ? 'हिन्दी' : 'EN'}</span>
+          </button>
+
+          {/* Role Switcher Pill with Persona Indicator */}
           <div className="relative">
             <button
               onClick={() => setShowRoleMenu(!showRoleMenu)}
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-full border text-xs font-semibold ${currentRoleInfo.bg} ${currentRoleInfo.color} hover:shadow-xs transition`}
-              title="Click to switch role and test permissions"
+              className={`flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-full border text-xs font-semibold ${currentRoleInfo.bg} ${currentRoleInfo.color} hover:border-[#B7E300]/50 transition cursor-pointer backdrop-blur-md shadow-xs`}
+              title="Click to switch persona and test RBAC"
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Role: {currentRoleInfo.title}</span>
-              <ChevronDown className="w-3.5 h-3.5 opacity-70" />
+              <span className={`w-2 h-2 rounded-full ${currentRoleInfo.dot}`} />
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0 opacity-80" />
+              <span className="hidden sm:inline text-[#A7ADA8]">{t('nav.role', 'Role')}:</span>
+              <span className="truncate max-w-[110px] sm:max-w-none text-[#F5F5F2]">{currentRoleTitle}</span>
+              <ChevronDown className="w-3.5 h-3.5 opacity-60 shrink-0" />
             </button>
 
             {/* Role Switch Dropdown */}
             {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95">
-                <div className="px-3 py-1.5 border-b border-slate-100">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    Switch Test Persona (RBAC Demo)
+              <div className="absolute right-0 mt-2 w-72 sm:w-80 liquid-glass-elevated bg-[#151919]/95 rounded-2xl shadow-2xl border border-white/15 py-2.5 z-50 animate-in fade-in zoom-in-95 backdrop-blur-3xl text-[#F2F4EF]">
+                <div className="px-3.5 py-2 border-b border-white/10">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#B7E300]">
+                    {t('nav.switch_persona', 'Switch Test Persona (RBAC Demo)')}
                   </p>
-                  <p className="text-[11px] text-slate-500">
-                    Test role-based backend authorization for the 5 specified roles:
+                  <p className="text-[11px] text-[#A7ADA8] mt-0.5">
+                    {t('nav.switch_persona_desc', 'Test role-based backend authorization for the 5 specified roles:')}
                   </p>
                 </div>
                 {(Object.keys(roleLabels) as UserRole[]).map((r) => {
                   const info = roleLabels[r];
                   const demoUser = DEMO_USERS[r];
                   const isCurrent = user?.role === r;
+                  const title = t(info.titleKey, info.defaultTitle);
                   return (
                     <button
                       key={r}
@@ -138,71 +265,63 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch, currentTab, setCurrent
                         switchRole(r);
                         setShowRoleMenu(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs flex items-start justify-between hover:bg-slate-50 transition ${
-                        isCurrent ? 'bg-amber-50/60 font-semibold' : ''
+                      className={`w-full text-left px-3.5 py-2 text-xs flex items-start justify-between hover:bg-white/5 transition cursor-pointer ${
+                        isCurrent ? 'bg-white/10 font-bold' : ''
                       }`}
                     >
                       <div>
-                        <div className="flex items-center space-x-1.5">
-                          <span className={`w-2 h-2 rounded-full ${r === 'platform_admin' ? 'bg-purple-600' : r === 'policymaker' ? 'bg-amber-600' : 'bg-emerald-600'}`} />
-                          <span className="font-medium text-slate-800">{info.title}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className={`w-2 h-2 rounded-full ${info.dot}`} />
+                          <span className="font-semibold text-[#F2F4EF]">{title}</span>
                         </div>
-                        <p className="text-[10px] text-slate-500 pl-3.5">{demoUser.org}</p>
+                        <p className="text-[10px] text-[#A7ADA8] pl-4">{demoUser.org}</p>
                       </div>
-                      {isCurrent && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                      {isCurrent && <CheckCircle2 className="w-3.5 h-3.5 text-[#B7E300] shrink-0 mt-0.5" />}
                     </button>
                   );
                 })}
-                <div className="px-3 py-2 border-t border-slate-100 flex justify-between">
+                <div className="px-3.5 py-2 border-t border-white/10 flex justify-between">
                   <button
                     onClick={() => {
                       setShowRoleMenu(false);
                       setShowLoginModal(true);
                     }}
-                    className="text-[11px] text-blue-700 font-semibold hover:underline flex items-center space-x-1"
+                    className="text-[11px] text-[#B7E300] font-bold hover:underline flex items-center space-x-1 cursor-pointer"
                   >
-                    <LogIn className="w-3 h-3" />
-                    <span>Custom Login</span>
+                    <LogIn className="w-3 h-3 text-[#B7E300]" />
+                    <span>{t('nav.custom_login', 'Custom Login')}</span>
                   </button>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setShowRoleMenu(false);
-                    }}
-                    className="text-[11px] text-rose-600 font-semibold hover:underline flex items-center space-x-1"
-                  >
-                    <LogOut className="w-3 h-3" />
-                    <span>Sign Out</span>
-                  </button>
+                  <span className="text-[10px] text-[#6F7772]">SIH 2026 Test Suite</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Notifications Button */}
+          {/* Notifications Dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowNotifMenu(!showNotifMenu)}
-              className="p-2 text-slate-600 hover:text-[#0a2540] hover:bg-slate-100 rounded-full transition relative"
+              className="p-2 text-[#A7ADA8] hover:text-[#F2F4EF] liquid-glass-pill rounded-full transition relative cursor-pointer"
+              aria-label="Notifications"
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#B7E300] rounded-full shadow-xs"></span>
             </button>
 
             {showNotifMenu && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-200 p-3 z-50 text-xs">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100 font-semibold text-slate-700">
-                  <span>Recent Platform Updates</span>
-                  <span className="text-[10px] text-slate-400">DoLR Feed</span>
+              <div className="absolute right-0 mt-2 w-72 sm:w-80 liquid-glass-elevated bg-[#151919]/95 rounded-2xl shadow-2xl border border-white/15 p-3.5 z-50 text-xs backdrop-blur-3xl text-[#F2F4EF]">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10 font-bold text-[#F5F5F2]">
+                  <span>{t('nav.notifications', 'Recent Platform Updates')}</span>
+                  <span className="text-[10px] text-[#B7E300] bg-[#B7E300]/15 px-2 py-0.5 rounded-full font-mono border border-[#B7E300]/30">{t('nav.dolr_feed', 'DoLR Feed')}</span>
                 </div>
-                <div className="divide-y divide-slate-100 mt-2">
-                  <div className="py-2">
-                    <p className="font-medium text-slate-800">Official SIH Dataset Ingested</p>
-                    <p className="text-[11px] text-slate-500">5 MoRD policy PDFs (26019, 26018, 26016, 25017, 26015) parsed and indexed.</p>
+                <div className="divide-y divide-white/10 mt-2">
+                  <div className="py-2.5">
+                    <p className="font-semibold text-[#F2F4EF]">Official SIH Dataset Ingested</p>
+                    <p className="text-[11px] text-[#A7ADA8] mt-0.5">5 MoRD policy PDFs (26019, 26018, 26016, 25017, 26015) parsed and indexed.</p>
                   </div>
-                  <div className="py-2">
-                    <p className="font-medium text-slate-800">DILRMP Q4 Sync Complete</p>
-                    <p className="text-[11px] text-slate-500">Computerization of RoR achieved in 97.8% of villages nationwide.</p>
+                  <div className="py-2.5">
+                    <p className="font-semibold text-[#F2F4EF]">DILRMP Q4 Sync Complete</p>
+                    <p className="text-[11px] text-[#A7ADA8] mt-0.5">Computerization of RoR achieved in 97.8% of villages nationwide.</p>
                   </div>
                 </div>
               </div>
@@ -211,18 +330,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch, currentTab, setCurrent
 
           {/* User Info Capsule or Sign In Button */}
           {user ? (
-            <div className="hidden lg:flex items-center space-x-2 pl-2 border-l border-slate-200 text-xs text-slate-700">
-              <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-xs">
+            <div className="hidden lg:flex items-center space-x-2 pl-2 border-l border-white/10 text-xs">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-r from-[#F5F5F2] to-[#C7CBC7] text-[#080A0A] flex items-center justify-center font-bold text-xs shadow-md">
                 {user.full_name ? user.full_name.charAt(0) : 'U'}
               </div>
               <div className="text-left">
-                <p className="font-semibold text-slate-800 leading-none">{user.full_name}</p>
-                <p className="text-[10px] text-slate-500 leading-tight truncate max-w-[130px]">{user.organization}</p>
+                <p className="font-bold text-[#F5F5F2] leading-none">{user.full_name}</p>
+                <p className="text-[10px] text-[#A7ADA8] leading-tight truncate max-w-[130px]">{user.organization}</p>
               </div>
               <button
                 onClick={logout}
-                className="text-slate-400 hover:text-rose-600 p-1 rounded"
-                title="Sign Out"
+                className="text-[#A7ADA8] hover:text-[#C56A9A] p-1 rounded-lg cursor-pointer transition"
+                title={t('nav.sign_out', 'Sign Out')}
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -230,20 +349,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearch, currentTab, setCurrent
           ) : (
             <button
               onClick={() => setShowLoginModal(true)}
-              className="px-3 py-1.5 bg-[#0a2540] text-white rounded-md text-xs font-semibold hover:bg-[#1e3a5f] transition flex items-center space-x-1"
+              className="btn-primary-cta"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Sign In</span>
+              <span>{t('auth.login_title', 'Sign In')}</span>
             </button>
           )}
         </div>
       </div>
 
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onSuccess={() => setCurrentTab('dashboard')}
-      />
+      {showLoginModal && (
+        <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      )}
     </header>
   );
 };

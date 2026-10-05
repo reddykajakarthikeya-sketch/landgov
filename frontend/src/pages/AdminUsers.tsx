@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, 
-  ShieldCheck, 
-  UserCheck, 
-  UserX, 
   Search, 
-  Building2, 
   Mail, 
   CheckCircle2, 
-  AlertCircle,
-  RefreshCw,
-  Lock
+  RefreshCw 
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
+import { useTranslation } from '../i18n';
 
 export const AdminUsers: React.FC = () => {
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const { user, isPlatformAdmin, isInstitutionAdmin } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,25 +61,29 @@ export const AdminUsers: React.FC = () => {
   });
 
   const roleBadges: Record<string, { label: string; color: string }> = {
-    platform_admin: { label: 'Platform Admin', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-    policymaker: { label: 'MoRD Policymaker', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-    institution_admin: { label: 'Institution Admin', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    researcher: { label: 'Researcher', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-    public_user: { label: 'Public Citizen', color: 'bg-slate-100 text-slate-800 border-slate-200' },
+    platform_admin: { label: isHi ? 'प्लेटफ़ॉर्म व्यवस्थापक' : 'Platform Admin', color: 'bg-white/10 text-[#F2F4EF] border-white/20' },
+    policymaker: { label: isHi ? 'नीति निर्माता (MoRD)' : 'MoRD Policymaker', color: 'bg-[#B7E300]/10 text-[#B7E300] border-[#B7E300]/30' },
+    institution_admin: { label: isHi ? 'संस्थान प्रशासक' : 'Institution Admin', color: 'bg-[#78C8C8]/10 text-[#78C8C8] border-[#78C8C8]/30' },
+    researcher: { label: isHi ? 'शोधकर्ता' : 'Researcher', color: 'bg-[#C7CBC7]/15 text-[#F2F4EF] border-white/20' },
+    public_user: { label: isHi ? 'नागरिक / सार्वजनिक' : 'Public Citizen', color: 'bg-white/5 text-[#A7ADA8] border-white/10' },
   };
 
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-[#0a2540] text-white p-6 rounded-lg shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="liquid-glass p-6 rounded-2xl border border-white/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#101313]/70">
         <div>
-          <div className="flex items-center space-x-2">
-            <Users className="w-6 h-6 text-amber-400" />
-            <h2 className="text-xl font-bold">
-              {isInstitutionAdmin ? `Institutional Directory — ${user?.organization}` : 'National User Directory & Role-Based Access Control'}
+          <div className="flex items-center space-x-3">
+            <span className="p-2.5 bg-white/5 text-[#B7E300] rounded-xl border border-white/10">
+              <Users className="w-6 h-6 text-[#B7E300]" />
+            </span>
+            <h2 className="text-xl font-bold text-[#F2F4EF]">
+              {isInstitutionAdmin 
+                ? (isHi ? `संस्थागत निर्देशिका — ${user?.organization}` : `Institutional Directory — ${user?.organization}`)
+                : (isHi ? 'राष्ट्रीय उपयोगकर्ता निर्देशिका एवं आरबीएसी नियंत्रण' : 'National User Directory & Role-Based Access Control')}
             </h2>
           </div>
-          <p className="text-slate-300 text-xs mt-1 max-w-2xl leading-relaxed">
+          <p className="text-[#A7ADA8] text-xs mt-2 max-w-2xl leading-relaxed">
             {isInstitutionAdmin 
               ? 'Manage affiliated researchers, fellows, and faculty members belonging to your institution.'
               : 'Enforce enterprise security policies, manage RBAC role assignments, and review active user credentials across all 5 authorized stakeholder classes.'}
@@ -91,42 +91,42 @@ export const AdminUsers: React.FC = () => {
         </div>
         <button 
           onClick={loadUsers}
-          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs rounded border border-slate-600 flex items-center space-x-1.5 cursor-pointer self-start md:self-auto"
+          className="px-3.5 py-2 bg-white/5 hover:bg-white/10 text-xs text-[#F2F4EF] rounded-xl border border-white/10 flex items-center space-x-2 cursor-pointer self-start md:self-auto transition shadow-xs font-medium"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Directory</span>
+          <span>{isHi ? "निर्देशिका ताज़ा करें" : "Refresh Directory"}</span>
         </button>
       </div>
 
       {actionSuccess && (
-        <div className="p-3 bg-emerald-50 border border-emerald-300 rounded text-emerald-800 text-xs flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-4 bg-[#B7E300]/10 border border-[#B7E300]/30 rounded-2xl text-[#B7E300] text-xs flex items-center space-x-2 shadow-xs font-medium">
+          <CheckCircle2 className="w-4 h-4 text-[#B7E300] shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
       {/* Filters & Search */}
-      <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-xs flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="liquid-glass p-4 rounded-2xl border border-white/10 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between bg-[#101313]/70">
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-[#A7ADA8]" />
           <input
             type="text"
-            placeholder="Search by name, email, or institution..."
+            placeholder={isHi ? "नाम, ईमेल या संस्था द्वारा खोजें..." : "Search by name, email, or institution..."}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0a2540]"
+            className="w-full pl-10 pr-3 py-2 text-xs bg-white/[0.04] rounded-xl text-[#F2F4EF] placeholder-[#A7ADA8] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
           />
         </div>
 
         {isPlatformAdmin && (
           <div className="flex items-center space-x-2 w-full md:w-auto">
-            <span className="text-xs font-semibold text-slate-600">Filter Role:</span>
+            <span className="text-xs font-semibold text-[#A7ADA8]">{isHi ? "भूमिका फ़िल्टर:" : "Filter Role:"}</span>
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="text-xs border border-slate-300 rounded px-2.5 py-1.5 bg-slate-50 focus:outline-none"
+              className="text-xs border border-white/10 rounded-xl px-3 py-2 bg-[#151919] text-[#F2F4EF] focus:outline-none focus:border-[#B7E300]/50"
             >
-              <option value="all">All Roles ({users.length})</option>
+              <option value="all">{isHi ? "सभी भूमिकाएँ" : "All Roles"} ({users.length})</option>
               <option value="platform_admin">Platform Admin</option>
               <option value="policymaker">MoRD Policymaker</option>
               <option value="institution_admin">Institution Admin</option>
@@ -138,68 +138,68 @@ export const AdminUsers: React.FC = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
+      <div className="liquid-glass rounded-2xl border border-white/10 shadow-sm overflow-hidden bg-[#101313]/70">
         {loading ? (
-          <div className="p-12 flex justify-center items-center">
-            <div className="w-8 h-8 border-4 border-[#0a2540] border-t-amber-500 rounded-full animate-spin"></div>
+          <div className="p-16 flex justify-center items-center">
+            <div className="w-10 h-10 border-4 border-white/10 border-t-[#B7E300] rounded-full animate-spin"></div>
           </div>
         ) : filteredUsers.length === 0 ? (
-          <div className="p-8 text-center text-slate-400 text-xs">
-            No registered users found matching the query.
+          <div className="p-12 text-center text-[#A7ADA8] text-xs">
+            {isHi ? "कोई पंजीकृत उपयोगकर्ता नहीं मिला।" : "No registered users found matching the query."}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-[10px] tracking-wider">
+              <thead className="bg-white/[0.03] text-[#F2F4EF] font-semibold border-b border-white/10 uppercase text-[10px] tracking-wider font-mono">
                 <tr>
-                  <th className="py-3 px-4">User Details</th>
-                  <th className="py-3 px-4">Role</th>
-                  <th className="py-3 px-4">Institution / Department</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Registered Date</th>
-                  {isPlatformAdmin && <th className="py-3 px-4 text-right">Actions</th>}
+                  <th className="py-3.5 px-4">{isHi ? "उपयोगकर्ता विवरण" : "User Details"}</th>
+                  <th className="py-3.5 px-4">{isHi ? "भूमिका" : "Role"}</th>
+                  <th className="py-3.5 px-4">{isHi ? "संस्थान / विभाग" : "Institution / Department"}</th>
+                  <th className="py-3.5 px-4">{isHi ? "स्थिति" : "Status"}</th>
+                  <th className="py-3.5 px-4">{isHi ? "पंजीकरण तिथि" : "Registered Date"}</th>
+                  {isPlatformAdmin && <th className="py-3.5 px-4 text-right">{isHi ? "कार्रवाई" : "Actions"}</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-white/10 text-[#A7ADA8]">
                 {filteredUsers.map((u) => {
-                  const roleStyle = roleBadges[u.role] || { label: u.role, color: 'bg-slate-100 text-slate-700' };
+                  const roleStyle = roleBadges[u.role] || { label: u.role, color: 'bg-white/5 text-[#A7ADA8] border-white/10' };
                   return (
-                    <tr key={u.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-4">
-                        <div className="font-semibold text-slate-800">{u.full_name}</div>
-                        <div className="text-[11px] text-slate-400 flex items-center space-x-1 mt-0.5">
-                          <Mail className="w-3 h-3" />
+                    <tr key={u.id} className="hover:bg-white/[0.03] transition">
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-[#F2F4EF]">{u.full_name}</div>
+                        <div className="text-[11px] text-[#A7ADA8] flex items-center space-x-1.5 mt-0.5">
+                          <Mail className="w-3 h-3 text-[#78C8C8]" />
                           <span>{u.email}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${roleStyle.color}`}>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-mono ${roleStyle.color}`}>
                           {roleStyle.label}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="text-slate-700 font-medium">{u.organization || 'General Public'}</div>
-                        <div className="text-[10px] text-slate-400">{u.department || 'N/A'}</div>
+                      <td className="py-3.5 px-4">
+                        <div className="text-[#F2F4EF] font-medium">{u.organization || 'General Public'}</div>
+                        <div className="text-[10px] text-[#A7ADA8]">{u.department || 'N/A'}</div>
                       </td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
-                          {u.is_active ? 'ACTIVE' : 'DEACTIVATED'}
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${u.is_active ? 'bg-[#B7E300]/10 text-[#B7E300] border border-[#B7E300]/30' : 'bg-[#C56A9A]/15 text-[#C56A9A] border border-[#C56A9A]/30'}`}>
+                          {u.is_active ? (isHi ? 'सक्रिय' : 'ACTIVE') : (isHi ? 'निष्क्रिय' : 'DEACTIVATED')}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-500">
+                      <td className="py-3.5 px-4 text-[#A7ADA8]">
                         {u.created_at}
                       </td>
                       {isPlatformAdmin && (
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => handleToggleStatus(u.id)}
-                            className={`px-2.5 py-1 rounded text-[11px] font-semibold transition cursor-pointer ${
+                            className={`px-3.5 py-1 rounded-full text-[10px] font-semibold transition cursor-pointer border shadow-xs ${
                               u.is_active 
-                                ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
-                                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                                ? 'bg-[#C56A9A]/15 text-[#C56A9A] hover:bg-[#C56A9A]/25 border-[#C56A9A]/40'
+                                : 'bg-[#B7E300]/10 text-[#B7E300] hover:bg-[#B7E300]/20 border-[#B7E300]/30'
                             }`}
                           >
-                            {u.is_active ? 'Deactivate' : 'Activate'}
+                            {u.is_active ? (isHi ? 'निष्क्रिय करें' : 'Deactivate') : (isHi ? 'सक्रिय करें' : 'Activate')}
                           </button>
                         </td>
                       )}

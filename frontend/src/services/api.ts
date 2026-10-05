@@ -337,5 +337,13 @@ export const api = {
       throw new Error(err.detail || 'Operation failed');
     }
     return res.json();
+  },
+
+  async sanctionGrant(grantId: number) {
+    return this.updateGrantApplicationStatus(grantId, 'sanctioned');
+  },
+
+  async endorseGrant(grantId: number) {
+    return this.updateGrantApplicationStatus(grantId, 'endorsed');
   }
 };

@@ -1,102 +1,315 @@
-# National Digital Platform for Research, Policy Innovation, and Evidence-Based Land Governance
+# LandGov
 
-**Smart India Hackathon (SIH) 2026**
-**Ministry / Department:** Ministry of Rural Development (MoRD) / Department of Land Resources (DoLR), Government of India
-**Theme:** Digital Knowledge Management, Artificial Intelligence, Geospatial Technologies & Evidence-Based Policy Innovation for Land Governance
-**Problem Statements Integrated:** **26019** (Primary), **26018**, **26016**, **25017**, and **26015**
-
----
-
-## 🏛️ Executive Overview
-India's land administration ecosystem has traditionally been implementation-oriented, with limited institutional focus on applied research, empirical policy experimentation, and evidence-based innovation. 
-
-The **National Digital Platform for Land Governance (NDP-LG)** integrates cadastral records, satellite imagery, legal dockets, and socio-economic datasets into a unified, secure, AI-enabled research and decision-support ecosystem.
+### National Digital Platform for Research, Policy Innovation & Evidence-Based Land Governance
+**Smart India Hackathon (SIH 2026) — Problem Statement 26019**  
+**Nodal Ministry:** Ministry of Rural Development (MoRD) / Department of Land Resources (DoLR), Government of India  
+**Integrated Directives:** MoRD Problem Statements **26019** (Primary), **26018**, **26016**, **25017**, and **26015**
 
 ---
 
-## 🚀 Live Demonstration URLs
-- **Public Live Tunnel (Zero-Password Shareable Link):** [https://patches-chairs-entrance-grove.trycloudflare.com](https://patches-chairs-entrance-grove.trycloudflare.com)
-- **Local Frontend Web Portal:** [http://127.0.0.1:5173](http://127.0.0.1:5173)
-- **Backend API Gateway:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Interactive OpenAPI/Swagger Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **Alternative API Reference (ReDoc):** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+## 1. Project Overview
 
-### 🧪 Automated SIH Demonstration Workflow Audit (100% Pass)
-To execute the comprehensive automated audit verifying Steps 1-6 and the end-to-end sequential workflow:
+India's land governance system has historically focused on routine administrative implementation, with limited capacity for applied empirical research, predictive analytics, and data-backed policy experimentation. 
+
+**LandGov** is an enterprise-grade national digital gateway that unites spatial cadastre, satellite remote sensing, revenue court jurisprudence, and socio-economic datasets into an evidence-based decision-support and research platform.
+
+---
+
+## 2. Problem Statement
+
+Under SIH Problem Statement **26019**, the Ministry of Rural Development (Department of Land Resources) identified critical systemic gaps:
+- **Fragmented Data Silos:** Cadastral records, revenue courts (NJDG), satellite interventions (ISRO Bhuvan), and infrastructure corridors (PM Gati Shakti) operate independently without interoperable interfaces.
+- **Absence of Empirical Simulation:** Policy formulation lacks interactive econometric and environmental modeling tools to simulate the consequences of land-use transitions before enactment.
+- **Academic-Policy Disconnect:** Peer-reviewed land governance research and grassroots institutional studies rarely inform national directives in real time.
+- **Language Barriers:** National data portals lack deep, native bilingual parity in Indic languages, restricting state and district-level adoption.
+
+---
+
+## 3. Proposed Solution
+
+LandGov bridges academic research, spatial data, and governance through a unified, secure, AI-powered platform:
+1. **Evidence-Based Repository:** Centralized repository for research papers, MoRD policy briefs, and verified datasets with instant PDF text extraction and citation retrieval.
+2. **Transparent Policy Simulation Lab:** Rule-based econometric engine that models the multi-factor impacts of urbanization rates, agricultural protection thresholds, and forest buffers on food security, carbon sinks, and dispute density.
+3. **Multi-Layer Dark GIS Engine:** Interactive Leaflet GIS mapping 14 Indian states, DILRMP cadastral digitization benchmarks, Bhuvan 30m watershed interventions (MoRD 26015), and infrastructure delay hotspots (MoRD 25017).
+4. **Grounded AI Research Assistant:** Zero-hallucination Retrieval-Augmented Generation (RAG) providing verifiable citations from official MoRD statutory documents.
+5. **Role-Based Collaboration & Consortia:** Scoped workspaces for Researchers, Policymakers, Institution Admins, Platform Admins, and Citizens.
+6. **Neo-Institutional Liquid Chrome Design:** Aesthetic marrying institutional authority with liquid glass depth, 3D mouse perspective interactions, and complete English/Hindi bilingual parity.
+
+---
+
+## 4. Key Features
+
+- **National KPI Dashboard:** Live benchmarks across DILRMP (97.8% RoR computerization, 93.0% cadastral digitization), time-series land use transitions, and revenue court dispute distributions.
+- **Interactive GIS Cadastral Explorer:** Dynamic vector boundaries, satellite layer filters, and state profile drawers with direct cross-module action buttons.
+- **Bilingual Translation System:** 100% translation parity across 18 namespaces and 259 keys (`en.json` & `hi.json`) with persistent user preference and `Noto Sans Devanagari` typography.
+- **AI Research Assistant:** Multi-mode assistant (*Evidence-Based Q&A*, *Paper Summarizer*, *Lit Review Drafter*, *Research Gap Finder*, *Dataset Recommender*) with primary source citations.
+- **Policy Simulation Lab:** 6 adjustable policy levers recalculating econometric projections in real time with transparent mathematical formulas and scenario saving.
+- **Collaborative Research Workspace:** Consortium task management, objective checklists, milestone tracking, and researcher discussion feeds.
+- **Innovation & Research Grants:** Digital grant application workflow with automated tracking codes (`DoLR-GR-XX-XXXX`) and status routing.
+- **Immutable Cryptographic Audit Trails:** Administrative logging of all system actions (logins, queries, downloads, mutations) with timestamps and client metadata.
+
+---
+
+## 5. System Workflow
+
+```
+                                  +-----------------------------+
+                                  |   Public / Authenticated    |
+                                  |      User Entry Point       |
+                                  +--------------+--------------+
+                                                 |
+                                                 v
+                                  +-----------------------------+
+                                  |     Vite + React Client     |
+                                  |   (Bilingual / Liquid UI)   |
+                                  +--------------+--------------+
+                                                 |
+                       +-------------------------+-------------------------+
+                       |                                                   |
+                       v                                                   v
+        +-----------------------------+                     +-----------------------------+
+        |     FastAPI REST Gateway    |                     |     Interactive Leaflet     |
+        |  (JWT Auth & RBAC Security) |                     |      Geospatial Engine      |
+        +--------------+--------------+                     +--------------+--------------+
+                       |                                                   |
+       +---------------+---------------+                                   |
+       |               |               |                                   |
+       v               v               v                                   |
++-------------+ +-------------+ +-------------+                            |
+| AI Grounded | | Simulation  | | SQLite /    |<---------------------------+
+| RAG Service | | Rule Engine | | PostgreSQL  |
++-------------+ +-------------+ +-------------+
+       |
+       v
++-------------+
+| Official    |
+| MoRD PDFs   |
++-------------+
+```
+
+---
+
+## 6. Technology Stack
+
+### Frontend Client
+- **Framework:** React 19, TypeScript
+- **Bundler & Tooling:** Vite v8.3.2, `@tailwindcss/vite`
+- **Styling & Design System:** Tailwind CSS v4, custom Neo-Institutional Liquid Chrome tokens
+- **Data Visualization:** Recharts (Responsive Area, Bar, Pie charts)
+- **Geospatial Mapping:** Leaflet, React-Leaflet (Dark inverted geospatial tiles)
+- **Icons & Motion:** Lucide React, hardware-accelerated 3D mouse perspective transforms (`Card3D.tsx`)
+- **Typography:** `Instrument Serif`, `Syne`, `Inter`, `Noto Sans Devanagari`
+
+### Backend API
+- **Framework:** Python 3.14, FastAPI, Starlette
+- **Server:** Uvicorn ASGI
+- **Data Validation & Serialization:** Pydantic v2
+- **Document Ingestion:** PyPDF (text extraction & indexing)
+- **Authentication & Security:** Python-Jose (JWT), Passlib / Bcrypt
+
+### Database & Storage
+- **ORM:** SQLAlchemy
+- **Database Engine:** SQLite (local development / demo) with PostgreSQL / PostGIS compatibility
+- **Data Seeding:** Built-in automated ingestion script for official MoRD datasets
+
+---
+
+## 7. Project Structure
+
+```
+national-land-governance-platform/
+├── backend/
+│   ├── app/
+│   │   ├── models/            # SQLAlchemy database entities
+│   │   ├── routers/           # FastAPI modular API routers
+│   │   │   ├── auth.py        # Authentication & RBAC endpoints
+│   │   │   ├── dashboard.py   # National KPIs & time-series data
+│   │   │   ├── repository.py  # Research publications & downloads
+│   │   │   ├── ai_assistant.py# Grounded AI research assistant
+│   │   │   ├── gis.py         # Geospatial states & layers
+│   │   │   ├── simulation.py  # Econometric simulation calculation
+│   │   │   ├── analytics.py   # Land-use and litigation analytics
+│   │   │   ├── projects.py    # Collaborative workspaces & tasks
+│   │   │   ├── grants.py      # Innovation grants & applications
+│   │   │   └── datasets.py    # Dataset inventory & schemas
+│   │   ├── services/          # Core domain business logic
+│   │   │   ├── ai_service.py  # RAG search & grounding engine
+│   │   │   ├── gis_service.py # Spatial data handling
+│   │   │   └── simulation_engine.py # Mathematical formula solver
+│   │   ├── config.py          # Environment settings & secrets
+│   │   ├── database.py        # Database session management
+│   │   ├── main.py            # FastAPI application factory
+│   │   ├── schemas.py         # Pydantic request/response schemas
+│   │   └── seed_data.py       # Official dataset seeding script
+│   ├── raw_dataset/           # Official MoRD problem statement PDFs
+│   ├── tests/                 # Automated pytest test suites
+│   ├── requirements.txt       # Python dependencies
+│   └── run.py                 # Backend launch script
+├── frontend/
+│   ├── src/
+│   │   ├── components/        # Reusable UI & layout components
+│   │   │   ├── auth/          # LoginModal with 1-click RBAC switcher
+│   │   │   ├── layout/        # Navbar, Sidebar, Layout, Footer
+│   │   │   └── ui/            # Card3D perspective tilt component
+│   │   ├── context/           # React AuthContext (JWT & roles)
+│   │   ├── i18n/              # LanguageContext & translations
+│   │   │   ├── en.json        # English translation strings (259 keys)
+│   │   │   └── hi.json        # Hindi translation strings (259 keys)
+│   │   ├── pages/             # All 14 platform pages
+│   │   ├── services/          # Axios API service client
+│   │   ├── types/             # TypeScript domain definitions
+│   │   ├── App.tsx            # Main application router & guards
+│   │   ├── index.css          # Design system & dark liquid chrome tokens
+│   │   └── main.tsx           # React DOM root entry
+│   ├── package.json           # Frontend dependencies & scripts
+│   ├── vite.config.ts         # Vite server & API proxy configuration
+│   └── index.html             # HTML entry & font declarations
+├── .env.example               # Environment variables template
+├── .gitignore                 # Production Git ignore rules
+├── run_app.py                 # Unified full-stack launch script
+├── FINAL_QA_AUDIT_REPORT.md   # Comprehensive QA audit documentation
+└── README.md                  # Project documentation
+```
+
+---
+
+## 8. Installation Instructions
+
+### Prerequisites
+- **Python:** 3.10 or higher (Python 3.14 verified)
+- **Node.js:** 18.0 or higher (Node.js 20+ recommended)
+- **npm:** 9.0 or higher
+- **Git**
+
+### Clone Repository
 ```bash
-python backend/tests/test_sih_demo_workflow.py
+git clone <repository-url>
+cd national-land-governance-platform
 ```
-*(Audit report generated at [`SIH_DEMO_TEST_REPORT.md`](SIH_DEMO_TEST_REPORT.md))*
 
----
-
-## 📂 Official SIH Dataset Integration
-- **Official Google Drive Folder:** [https://drive.google.com/drive/folders/1ibmzWpl_nK7aBhQurs22R9kqh9fPAQwC](https://drive.google.com/drive/folders/1ibmzWpl_nK7aBhQurs22R9kqh9fPAQwC)
-- **Status:** **VERIFIED & FULLY INTEGRATED**
-- **Ingested Artifacts (Department of Land Resources):**
-  1. `26019.pdf`: National Digital Platform for Research, Policy Innovation & Land Governance (Flagship Problem Statement & Technical Architecture)
-  2. `26018.pdf`: Intelligent Multilingual Land Record Digitization and Validation System (Indic OCR & Khasra parsing)
-  3. `26016.pdf`: Unified Land Acquisition & Real-Time Monitoring Platform (GIS geo-tagging & cadastral workflow)
-  4. `25017.pdf`: Predictive Analytics System for Early Detection of Land Acquisition Delays (ML delay risk scoring)
-  5. `26015.pdf`: Geospatial Analysis & Interpretation of Geo-Coded Satellite Images for Watershed Outcomes (SRISHTI-DRISHTI 30m Satellite Interventions)
-
----
-
-## 👥 Role-Based Access Control (RBAC) & Test Accounts
-The platform features an instant **Role Switcher** in the top navigation bar to test backend-enforced permissions across all 5 user classes:
-
-| Role | Test Email | Password | Scope & Permissions |
-| :--- | :--- | :--- | :--- |
-| **Platform Admin** | `admin@dolr.gov.in` | `Admin@1234` | Full system governance, audit logs, dataset verification, user management |
-| **MoRD Policymaker** | `policymaker@mord.gov.in` | `Admin@1234` | Policy simulations, national benchmarks, executive dashboards, grant approvals |
-| **Institution Admin** | `institution@nirdpr.ac.in` | `Admin@1234` | Research project initiation, institutional consortia oversight, grant routing |
-| **Researcher** | `researcher@iitd.ac.in` | `Admin@1234` | Resource submissions, AI research queries, collaborative workspaces, tasks |
-| **Public User** | `citizen@public.org` | `Admin@1234` | Open access repository search, public DILRMP data preview, knowledge exploration |
-
----
-
-## 🧩 Core Platform Modules
-1. **National Dashboard:** High-level KPIs, DILRMP modernization benchmarks (97.8% RoR computerization, 93.0% cadastral digitization), Recharts land-use change trends (2018-2024), climate resilience metrics, and revenue dispute pendency.
-2. **Research Repository:** Centralized repository with full-text search, domain/type filters, SIH official document toggle, modal document previews, citation generator, and PDF downloads.
-3. **AI Research Assistant:** Grounded RAG engine providing document summarization, literature review outline drafting, research gap discovery, and dataset recommendation with verifiable citations.
-4. **GIS Explorer & Cadastral Maps:** Interactive Leaflet map with multi-layer controls for DILRMP state status, Bhuvan SRISHTI-DRISHTI 30m watershed sites (MoRD 26015), and infrastructure acquisition delay markers (MoRD 25017/26016).
-5. **Policy Analytics:** Time-series trends (Agricultural vs Built-up shift), pie charts of revenue dispute categories (Inheritance, Encroachment, Acquisition), delay stage analysis, and state performance matrix.
-6. **Policy Simulation Lab:** Transparent rule-based decision-support engine with interactive sliders (Urban growth %, Agri protection %, Forest conservation %, Industrial corridors ha, Solar parks ha, Waterbody buffer m), explicit mathematical formulas, assumptions, and limitations.
-7. **Collaborative Research Workspace:** Database-backed project management with objectives checklists, task assignment with real-time status toggling, milestones tracking, and discussion comments.
-8. **Innovation & Grants Portal:** Research grants, hackathons (SIH 2026), pilot projects, online eligibility verification, application submission with automated tracking number generation (`DoLR-GR-XX-XXXX`).
-9. **Dataset Management Console:** Mandatory 9-field inventory (Dataset name, Source, Format, Record count, Fields, Geographic coverage, Import date, Validation status, Integration status) with schema viewer and data previews.
-10. **Scope of Study:** Dedicated searchable matrix containing Research domains, Fundamental research questions, Required datasets, Analytical methods, and Expected outputs.
-11. **Suggested Tech Stack:** End-to-end technology architecture table mapping components, technologies, purpose, implementation statuses, and future roadmaps.
-12. **API & System Integrations:** Gateway console managing connections with ISRO Bhuvan, DILRMP, NJDG e-Courts, and PM Gati Shakti with manual sync triggers and sandboxed simulation disclosure.
-
----
-
-## 🛠️ Technology Architecture
-- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Lucide Icons, Recharts, Leaflet, React-Leaflet
-- **Backend:** Python 3.14, FastAPI, Uvicorn, Pydantic v2, PyPDF
-- **Database:** SQLAlchemy ORM with SQLite / PostgreSQL with PostGIS compatibility
-- **Security:** JWT (JSON Web Tokens), Bcrypt password hashing, Role-Based Access Control (RBAC), Audit logging
-
----
-
-## ⚡ How to Run the Application
-
-### 1. Start Backend Server
-```powershell
+### Backend Setup
+```bash
 cd backend
-python -m app.seed_data   # Seeds all database tables, users, and SIH documents
-python run.py             # Launches server on http://127.0.0.1:8000
+python -m venv venv
+
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+# macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
 ```
 
-### 2. Start Frontend Client
-```powershell
+### Frontend Setup
+```bash
+cd ../frontend
+npm install
+```
+
+---
+
+## 9. Environment Variables
+
+Create a `.env` file in the project root or backend folder based on `.env.example`:
+
+```env
+# Platform Meta
+PROJECT_NAME="National Digital Platform for Land Governance"
+VERSION="1.0.0"
+
+# Database Configuration (Defaults to local SQLite if omitted)
+# DATABASE_URL="postgresql://user:password@localhost:5432/landgov"
+DATABASE_URL=""
+
+# JWT Security
+SECRET_KEY="sih-mord-dolr-land-governance-secret-key-2026-secure-token"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# Optional Live LLM Keys (Falls back to Grounded Domain Heuristic Engine if omitted)
+OPENAI_API_KEY=""
+GEMINI_API_KEY=""
+```
+
+---
+
+## 10. Running the Project Locally
+
+### Option A: Unified Launcher (Recommended)
+From the project root:
+```bash
+python run_app.py
+```
+*To also launch a public Cloudflare tunnel, run:*
+```bash
+python run_app.py --share
+```
+
+### Option B: Running Services Separately
+
+**1. Launch Backend:**
+```bash
+cd backend
+python run.py
+```
+*API will run at `http://127.0.0.1:8000` (Swagger docs at `/docs`).*
+
+**2. Launch Frontend:**
+```bash
 cd frontend
-npm install               # Installs dependencies
-npm run dev               # Launches Vite dev server on http://127.0.0.1:5173
+npm run dev
+```
+*Web application will run at `http://localhost:5173`.*
+
+---
+
+## 11. Build Instructions
+
+### Building Frontend for Production
+```bash
+cd frontend
+npm run build
+```
+*Build artifacts are written to `frontend/dist/` in < 600ms.*
+
+### Running Automated Test Verification
+Run all automated test suites to verify integrity:
+```bash
+# Bilingual Parity, 3D Cards & Layout Responsiveness
+python -m pytest backend/tests/test_bilingual_ui_audit.py -v
+
+# Role-Based Access Control (RBAC) Permissions
+python -m pytest backend/tests/test_role_dashboards.py -v
+
+# End-to-End SIH 9-Phase Workflow
+python backend/tests/test_sih_demo_workflow.py
+
+# Core API Platform Tests
+python -m pytest backend/tests/test_platform.py -v
 ```
 
-### 3. Run Automated Test Suite
-```powershell
-cd backend
-python tests/test_platform.py
-```
+---
+
+## 12. Pre-Seeded Demonstration Accounts
+
+All accounts use the unified demonstration password: **`Admin@1234`**
+
+| Role | Test Email | Demonstration Persona | Scope & Privileges |
+| :--- | :--- | :--- | :--- |
+| **Platform Administrator** | `admin@dolr.gov.in` | Dr. Rajeshwar Sharma (DoLR IT Cell) | Apex system governance, user directory status, cryptographic audit logs |
+| **MoRD Policymaker** | `policymaker@mord.gov.in` | Smt. Sunita Verma, IAS (PME Division) | Decision consoles, policy simulations, state benchmarks, grant approvals |
+| **Institution Administrator** | `institution@nirdpr.ac.in` | Prof. Anand K. Murthy (Director, NIRDPR) | Member directory, institutional consortia oversight, collaborative workspace |
+| **Academic Researcher** | `researcher@iitd.ac.in` | Dr. Priyanka Sengupta (IIT Delhi) | Literature reviews, AI research queries, collaborative tasks, grant drafting |
+| **Public Citizen** | `citizen@public.org` | Vikramaditya Deshmukh (Civil Society) | Open repository search, public DILRMP data preview, knowledge exploration |
+
+*(Note: Users can also click any role directly in the login modal for instant one-click demonstration).*
+
+---
+
+## 13. Team Information
+
+- **Project:** LandGov (National Digital Platform for Land Governance)
+- **Competition:** Smart India Hackathon (SIH 2026)
+- **Problem Statement ID:** 26019
+- **Organization / Ministry:** Department of Land Resources (DoLR), Ministry of Rural Development (MoRD)
+- **Lead Developer:** Karthikeya (`karthikeya@gmail.com`)

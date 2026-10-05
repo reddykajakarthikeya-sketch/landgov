@@ -4,21 +4,21 @@ import {
   FolderPlus, 
   CheckSquare, 
   Square, 
-  Clock, 
   MessageSquare, 
   Milestone, 
   Plus, 
-  Building2, 
-  AlertCircle, 
   Send,
-  X,
-  UserCheck
+  X
 } from 'lucide-react';
 import { api } from '../services/api';
 import { ResearchProject, ProjectTask } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../i18n';
+import { Card3D } from '../components/ui/Card3D';
 
 export const CollaborativeWorkspace: React.FC = () => {
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const { user } = useAuth();
   const [projects, setProjects] = useState<ResearchProject[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
@@ -139,64 +139,65 @@ export const CollaborativeWorkspace: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 liquid-glass p-5 rounded-2xl border border-white/10 shadow-sm">
         <div>
-          <h3 className="text-sm font-bold text-[#0a2540] flex items-center space-x-2">
-            <Users2 className="w-4 h-4 text-blue-600" />
-            <span>Collaborative Land Research & Policy Workspaces</span>
+          <h3 className="text-sm font-bold text-[#F2F4EF] flex items-center space-x-2">
+            <Users2 className="w-5 h-5 text-[#B7E300]" />
+            <span>{t('workspace.title', isHi ? 'सहयोगी अनुसंधान कार्यक्षेत्र' : 'Collaborative Research Workspace')}</span>
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Database-backed project management for research consortia, universities, and DoLR cells
+          <p className="text-xs text-[#A7ADA8] mt-1">
+            {t('workspace.subtitle', isHi ? 'संस्थानों में संयुक्त अध्ययन, माइलस्टोन और कार्य प्रबंधन' : 'Multi-institutional research tasks, milestones, and peer discussions')}
           </p>
         </div>
         <button
           onClick={() => setShowNewProjModal(true)}
-          className="px-3.5 py-1.5 bg-[#0a2540] hover:bg-[#1e3a5f] text-white font-semibold rounded-md transition text-xs flex items-center space-x-1.5 self-start sm:self-auto"
+          className="btn-primary-cta px-4 py-2 text-xs flex items-center space-x-2 self-start sm:self-auto cursor-pointer font-medium"
         >
-          <FolderPlus className="w-4 h-4" />
-          <span>New Research Project</span>
+          <FolderPlus className="w-3.5 h-3.5" />
+          <span>{t('workspace.new_project', isHi ? 'नया अनुसंधान प्रोजेक्ट' : 'New Project')}</span>
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Projects List Sidebar */}
         <div className="lg:col-span-1 space-y-3">
-          <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              Active Projects ({projects.length})
+          <div className="liquid-glass p-4 rounded-2xl border border-white/10 shadow-sm">
+            <span className="text-xs font-bold text-[#F2F4EF] uppercase tracking-wider block mb-3 font-mono">
+              {t('workspace.active_projects', isHi ? 'सक्रिय अनुसंधान परियोजनाएं' : 'Active Research Projects')} ({projects.length})
             </span>
-            <div className="space-y-2 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
               {projects.map((p) => {
                 const isSelected = p.id === selectedProjectId;
                 return (
-                  <div
+                  <Card3D
                     key={p.id}
+                    maxTilt={4}
                     onClick={() => setSelectedProjectId(p.id)}
-                    className={`p-3 rounded-lg border text-xs cursor-pointer transition ${
+                    className={`p-4 rounded-xl border text-xs cursor-pointer transition ${
                       isSelected
-                        ? 'bg-blue-50/80 border-blue-400 shadow-xs'
-                        : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-[#151919] border-[#B7E300]/50 shadow-md ring-1 ring-[#B7E300]/30'
+                        : 'liquid-glass-card border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-slate-500 text-[10px] uppercase">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-semibold text-[#A7ADA8] text-[10px] uppercase font-mono">
                         {p.domain.replace('_', ' ')}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-bold capitalize">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#B7E300]/10 text-[#B7E300] font-bold capitalize border border-[#B7E300]/30">
                         {p.status}
                       </span>
                     </div>
-                    <h4 className="font-bold text-slate-900 line-clamp-2 leading-snug">
+                    <h4 className="font-bold text-[#F2F4EF] line-clamp-2 leading-snug">
                       {p.title}
                     </h4>
-                    <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                    <p className="text-[11px] text-[#A7ADA8] mt-1.5 line-clamp-2 leading-relaxed">
                       {p.summary}
                     </p>
-                    <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-500">
-                      <span>Tasks: <strong>{p.completed_tasks || 0}/{p.tasks_count || 0}</strong></span>
-                      <span>Target: {p.target_state}</span>
+                    <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[10px] text-[#A7ADA8]">
+                      <span>Tasks: <strong className="text-[#F2F4EF]">{p.completed_tasks || 0}/{p.tasks_count || 0}</strong></span>
+                      <span className="text-[#78C8C8] font-semibold font-mono">{p.target_state}</span>
                     </div>
-                  </div>
+                  </Card3D>
                 );
               })}
             </div>
@@ -206,28 +207,28 @@ export const CollaborativeWorkspace: React.FC = () => {
         {/* Selected Project Deep Dive */}
         <div className="lg:col-span-2 space-y-4">
           {projectDetail ? (
-            <div className="bg-white p-5 rounded-lg border border-slate-200 shadow-xs space-y-5 text-xs">
+            <div className="liquid-glass p-6 rounded-2xl border border-white/10 shadow-sm space-y-5 text-xs bg-[#101313]/70">
               {/* Project Header */}
               <div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                  <span>Institution: <strong>{projectDetail.institution}</strong></span>
-                  <span>Lead: <strong>{projectDetail.lead_researcher_name}</strong></span>
+                <div className="flex items-center justify-between text-[11px] text-[#A7ADA8] mb-1.5">
+                  <span>Institution: <strong className="text-[#B7E300]">{projectDetail.institution}</strong></span>
+                  <span>Lead: <strong className="text-[#F2F4EF]">{projectDetail.lead_researcher_name}</strong></span>
                 </div>
-                <h3 className="text-base font-bold text-[#0a2540] leading-snug">
+                <h3 className="text-base font-bold text-[#F2F4EF] leading-snug">
                   {projectDetail.title}
                 </h3>
-                <p className="text-slate-600 mt-1.5 leading-relaxed">
+                <p className="text-[#A7ADA8] mt-2 leading-relaxed">
                   {projectDetail.summary}
                 </p>
               </div>
 
               {/* Research Objectives */}
-              <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
-                <span className="font-bold text-slate-800 text-xs">Research Objectives:</span>
-                <div className="space-y-1.5">
+              <div className="p-4 bg-white/[0.03] rounded-xl border border-white/10 space-y-2">
+                <span className="font-bold text-[#F2F4EF] text-xs">{isHi ? "अनुसंधान उद्देश्य:" : "Research Objectives:"}</span>
+                <div className="space-y-2">
                   {projectDetail.objectives?.map((obj) => (
-                    <div key={obj.id} className="flex items-start space-x-2 text-[11px] text-slate-700">
-                      <CheckSquare className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div key={obj.id} className="flex items-start space-x-2 text-[11px] text-[#F2F4EF]">
+                      <CheckSquare className="w-4 h-4 text-[#B7E300] shrink-0 mt-0.5" />
                       <span>{obj.title}</span>
                     </div>
                   ))}
@@ -235,48 +236,50 @@ export const CollaborativeWorkspace: React.FC = () => {
               </div>
 
               {/* Task Board */}
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800 text-xs flex items-center space-x-1.5">
-                    <CheckSquare className="w-4 h-4 text-blue-600" />
-                    <span>Project Tasks ({projectDetail.tasks?.length || 0})</span>
+                  <span className="font-bold text-[#F2F4EF] text-xs flex items-center space-x-2">
+                    <CheckSquare className="w-4 h-4 text-[#B7E300]" />
+                    <span>{isHi ? "परियोजना कार्य" : "Project Tasks"} ({projectDetail.tasks?.length || 0})</span>
                   </span>
                   <button
                     onClick={() => setShowNewTaskModal(true)}
-                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-[11px] transition flex items-center space-x-1"
+                    className="btn-secondary-cta px-3 py-1 text-[11px] flex items-center space-x-1 cursor-pointer"
                   >
-                    <Plus className="w-3 h-3" />
-                    <span>Add Task</span>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{isHi ? "कार्य जोड़ें" : "Add Task"}</span>
                   </button>
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {projectDetail.tasks?.map((t) => {
                     const isDone = t.status === 'completed';
                     return (
                       <div
                         key={t.id}
                         onClick={() => handleToggleTask(t.id)}
-                        className={`p-2.5 rounded-lg border flex items-center justify-between cursor-pointer transition ${
-                          isDone ? 'bg-slate-50 border-slate-200 text-slate-400' : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300'
+                        className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition ${
+                          isDone 
+                            ? 'bg-white/[0.02] border-white/5 text-[#6F7772]' 
+                            : 'liquid-glass-card border-white/10 text-[#F2F4EF] hover:border-[#B7E300]/40'
                         }`}
                       >
-                        <div className="flex items-center space-x-2.5">
+                        <div className="flex items-center space-x-3">
                           {isDone ? (
-                            <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <CheckSquare className="w-4 h-4 text-[#B7E300] shrink-0" />
                           ) : (
-                            <Square className="w-4 h-4 text-slate-400 shrink-0" />
+                            <Square className="w-4 h-4 text-[#A7ADA8] shrink-0" />
                           )}
-                          <span className={isDone ? 'line-through text-slate-500 font-medium' : 'font-semibold'}>
+                          <span className={isDone ? 'line-through text-[#6F7772] font-medium' : 'font-semibold text-[#F2F4EF]'}>
                             {t.title}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2 text-[10px]">
-                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                          <span className="bg-white/5 text-[#F2F4EF] px-2.5 py-0.5 rounded-full font-medium border border-white/10 font-mono">
                             {t.assigned_to}
                           </span>
-                          <span className={`px-1.5 py-0.5 rounded uppercase font-bold text-[9px] ${
-                            t.priority === 'high' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                          <span className={`px-2 py-0.5 rounded-full uppercase font-bold text-[9px] ${
+                            t.priority === 'high' ? 'bg-[#C56A9A]/15 text-[#C56A9A] border border-[#C56A9A]/30' : 'bg-[#B7E300]/10 text-[#B7E300] border border-[#B7E300]/30'
                           }`}>
                             {t.priority}
                           </span>
@@ -288,25 +291,27 @@ export const CollaborativeWorkspace: React.FC = () => {
               </div>
 
               {/* Milestones Tracker */}
-              <div className="space-y-2">
-                <span className="font-bold text-slate-800 text-xs flex items-center space-x-1.5">
-                  <Milestone className="w-4 h-4 text-amber-600" />
-                  <span>Project Milestones</span>
+              <div className="space-y-2.5">
+                <span className="font-bold text-[#F2F4EF] text-xs flex items-center space-x-2">
+                  <Milestone className="w-4 h-4 text-[#78C8C8]" />
+                  <span>{isHi ? "परियोजना मील के पत्थर" : "Project Milestones"}</span>
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {projectDetail.milestones?.map((m) => (
                     <div
                       key={m.id}
-                      className={`p-2.5 rounded-lg border text-[11px] ${
-                        m.is_achieved ? 'bg-emerald-50/60 border-emerald-300 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-600'
+                      className={`p-3 rounded-xl border text-[11px] ${
+                        m.is_achieved 
+                          ? 'bg-[#B7E300]/10 border-[#B7E300]/30 text-[#F2F4EF]' 
+                          : 'bg-white/[0.03] border-white/10 text-[#F2F4EF]'
                       }`}
                     >
-                      <p className="font-bold leading-tight">{m.title}</p>
-                      <p className="text-[10px] mt-1 text-slate-500">Due: {m.due_date || 'TBD'}</p>
-                      <span className={`inline-block mt-1 text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded ${
-                        m.is_achieved ? 'bg-emerald-200 text-emerald-900' : 'bg-slate-200 text-slate-600'
+                      <p className="font-bold leading-tight text-[#F2F4EF]">{m.title}</p>
+                      <p className="text-[10px] mt-1.5 text-[#A7ADA8]">Due: {m.due_date || 'TBD'}</p>
+                      <span className={`inline-block mt-2 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                        m.is_achieved ? 'bg-[#B7E300]/20 text-[#B7E300] border border-[#B7E300]/40' : 'bg-white/5 text-[#A7ADA8]'
                       }`}>
-                        {m.is_achieved ? 'Delivered' : 'Pending'}
+                        {m.is_achieved ? (isHi ? 'पूर्ण' : 'Delivered') : (isHi ? 'लंबित' : 'Pending')}
                       </span>
                     </div>
                   ))}
@@ -314,20 +319,20 @@ export const CollaborativeWorkspace: React.FC = () => {
               </div>
 
               {/* Discussion & Comments */}
-              <div className="space-y-3 pt-3 border-t border-slate-200">
-                <span className="font-bold text-slate-800 text-xs flex items-center space-x-1.5">
-                  <MessageSquare className="w-4 h-4 text-purple-600" />
-                  <span>Researcher Discussions ({projectDetail.comments?.length || 0})</span>
+              <div className="space-y-3 pt-3 border-t border-white/10">
+                <span className="font-bold text-[#F2F4EF] text-xs flex items-center space-x-2">
+                  <MessageSquare className="w-4 h-4 text-[#B7E300]" />
+                  <span>{isHi ? "शोधकर्ता चर्चाएं" : "Researcher Discussions"} ({projectDetail.comments?.length || 0})</span>
                 </span>
 
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {projectDetail.comments?.map((c) => (
-                    <div key={c.id} className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                        <span className="font-bold text-slate-700">{c.user_name}</span>
-                        <span>{new Date(c.created_at).toLocaleDateString()}</span>
+                    <div key={c.id} className="p-3 bg-white/[0.03] rounded-xl border border-white/10">
+                      <div className="flex items-center justify-between text-[10px] text-[#A7ADA8] mb-1">
+                        <span className="font-bold text-[#B7E300]">{c.user_name}</span>
+                        <span className="text-[#6F7772]">{new Date(c.created_at).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-slate-700 text-xs leading-relaxed">{c.content}</p>
+                      <p className="text-[#F2F4EF] text-xs leading-relaxed">{c.content}</p>
                     </div>
                   ))}
                 </div>
@@ -338,22 +343,22 @@ export const CollaborativeWorkspace: React.FC = () => {
                     type="text"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Contribute a research observation or review remark..."
-                    className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded text-xs focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#0a2540]"
+                    placeholder={isHi ? "एक शोध अवलोकन या समीक्षा टिप्पणी लिखें..." : "Contribute a research observation or review remark..."}
+                    className="flex-1 px-4 py-2 bg-white/[0.04] rounded-full text-xs text-[#F2F4EF] placeholder-[#A7ADA8] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
                   />
                   <button
                     type="submit"
                     disabled={!commentText.trim()}
-                    className="px-3 py-2 bg-[#0a2540] hover:bg-[#1e3a5f] disabled:opacity-40 text-white font-semibold rounded text-xs transition"
+                    className="btn-primary-cta px-5 py-2 disabled:opacity-40 text-xs cursor-pointer font-medium"
                   >
-                    Post
+                    {isHi ? "टिप्पणी भेजें" : "Post"}
                   </button>
                 </form>
               </div>
             </div>
           ) : (
-            <div className="p-12 text-center text-slate-400 bg-white rounded-lg border border-slate-200">
-              Select a research project to inspect objectives and tasks.
+            <div className="p-16 text-center text-[#A7ADA8] liquid-glass rounded-2xl border border-white/10">
+              {isHi ? "उद्देश्यों और कार्यों के निरीक्षण हेतु एक शोध परियोजना चुनें।" : "Select a research project to inspect objectives and tasks."}
             </div>
           )}
         </div>
@@ -361,73 +366,73 @@ export const CollaborativeWorkspace: React.FC = () => {
 
       {/* New Project Modal */}
       {showNewProjModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 text-xs space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-              <h3 className="font-bold text-sm text-[#0a2540]">Create New Research Project</h3>
-              <button onClick={() => setShowNewProjModal(false)}><X className="w-4 h-4 text-slate-400" /></button>
+        <div className="fixed inset-0 z-50 bg-[#080A0A]/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="liquid-glass-elevated bg-[#101313]/95 text-[#F2F4EF] rounded-2xl shadow-xl max-w-lg w-full p-6 text-xs space-y-4 border border-white/15">
+            <div className="flex justify-between items-center pb-3 border-b border-white/10">
+              <h3 className="font-bold text-sm text-[#F2F4EF]">{isHi ? "नया अनुसंधान प्रोजेक्ट बनाएं" : "Create New Research Project"}</h3>
+              <button onClick={() => setShowNewProjModal(false)}><X className="w-5 h-5 text-[#A7ADA8] hover:text-[#F2F4EF] cursor-pointer" /></button>
             </div>
-            <form onSubmit={handleCreateProject} className="space-y-3">
+            <form onSubmit={handleCreateProject} className="space-y-3.5">
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Project Title *</label>
+                <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "प्रोजेक्ट शीर्षक *" : "Project Title *"}</label>
                 <input
                   type="text"
                   required
                   value={newProjForm.title}
                   onChange={(e) => setNewProjForm({ ...newProjForm, title: e.target.value })}
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded"
+                  className="w-full px-3 py-2 bg-white/[0.04] rounded-xl text-[#F2F4EF] placeholder-[#A7ADA8] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
                   placeholder="e.g. AI-Assisted Boundary Polygonization for Bhu-naksha"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Executive Summary *</label>
+                <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "कार्यकारी सारांश *" : "Executive Summary *"}</label>
                 <textarea
                   required
                   rows={3}
                   value={newProjForm.summary}
                   onChange={(e) => setNewProjForm({ ...newProjForm, summary: e.target.value })}
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded"
+                  className="w-full px-3 py-2 bg-white/[0.04] rounded-xl text-[#F2F4EF] placeholder-[#A7ADA8] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
                   placeholder="Outline the problem statement, data sources, and analytical scope..."
                 />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Research Domain</label>
+                  <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "अनुसंधान डोमेन" : "Research Domain"}</label>
                   <select
                     value={newProjForm.domain}
                     onChange={(e) => setNewProjForm({ ...newProjForm, domain: e.target.value })}
-                    className="w-full px-2 py-1.5 border border-slate-300 rounded"
+                    className="w-full px-3 py-2 bg-[#151919] border border-white/10 rounded-xl text-[#F2F4EF] focus:outline-none focus:border-[#B7E300]/50"
                   >
-                    <option value="land_records">Land Records & Cadastre</option>
-                    <option value="watershed_management">Watershed Management</option>
-                    <option value="land_acquisition">Land Acquisition</option>
-                    <option value="urban_expansion">Urban Expansion</option>
-                    <option value="dispute_resolution">Dispute Resolution</option>
+                    <option value="land_records">{isHi ? "भू-अभिलेख और कैडस्ट्रे" : "Land Records & Cadastre"}</option>
+                    <option value="watershed_management">{isHi ? "जलसंभर प्रबंधन" : "Watershed Management"}</option>
+                    <option value="land_acquisition">{isHi ? "भूमि अधिग्रहण" : "Land Acquisition"}</option>
+                    <option value="urban_expansion">{isHi ? "शहरी विस्तार" : "Urban Expansion"}</option>
+                    <option value="dispute_resolution">{isHi ? "विवाद निवारण" : "Dispute Resolution"}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Target State / Scope</label>
+                  <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "लक्षित राज्य / दायरा" : "Target State / Scope"}</label>
                   <input
                     type="text"
                     value={newProjForm.target_state}
                     onChange={(e) => setNewProjForm({ ...newProjForm, target_state: e.target.value })}
-                    className="w-full px-2 py-1.5 border border-slate-300 rounded"
+                    className="w-full px-3 py-2 bg-white/[0.04] rounded-xl text-[#F2F4EF] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
                   />
                 </div>
               </div>
-              <div className="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end space-x-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowNewProjModal(false)}
-                  className="px-3 py-1.5 border border-slate-300 rounded text-slate-600"
+                  className="btn-secondary-cta px-4 py-1.5 text-xs cursor-pointer"
                 >
-                  Cancel
+                  {isHi ? "रद्द करें" : "Cancel"}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#0a2540] text-white font-semibold rounded hover:bg-[#1e3a5f]"
+                  className="btn-primary-cta px-5 py-1.5 text-xs cursor-pointer font-medium"
                 >
-                  Initialize Workspace
+                  {isHi ? "कार्यक्षेत्र प्रारंभ करें" : "Initialize Workspace"}
                 </button>
               </div>
             </form>
@@ -437,60 +442,60 @@ export const CollaborativeWorkspace: React.FC = () => {
 
       {/* New Task Modal */}
       {showNewTaskModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 text-xs space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-              <h3 className="font-bold text-sm text-[#0a2540]">Add Project Task</h3>
-              <button onClick={() => setShowNewTaskModal(false)}><X className="w-4 h-4 text-slate-400" /></button>
+        <div className="fixed inset-0 z-50 bg-[#080A0A]/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="liquid-glass-elevated bg-[#101313]/95 text-[#F2F4EF] rounded-2xl shadow-xl max-w-md w-full p-5 text-xs space-y-3.5 border border-white/15">
+            <div className="flex justify-between items-center pb-3 border-b border-white/10">
+              <h3 className="font-bold text-sm text-[#F2F4EF]">{isHi ? "परियोजना कार्य जोड़ें" : "Add Project Task"}</h3>
+              <button onClick={() => setShowNewTaskModal(false)}><X className="w-5 h-5 text-[#A7ADA8] hover:text-[#F2F4EF] cursor-pointer" /></button>
             </div>
             <form onSubmit={handleAddTask} className="space-y-3">
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Task Title *</label>
+                <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "कार्य शीर्षक *" : "Task Title *"}</label>
                 <input
                   type="text"
                   required
                   value={newTaskForm.title}
                   onChange={(e) => setNewTaskForm({ ...newTaskForm, title: e.target.value })}
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded"
+                  className="w-full px-3 py-2 bg-white/[0.04] rounded-xl text-[#F2F4EF] placeholder-[#A7ADA8] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
                   placeholder="e.g. Georeference 50 cadastral sheets for Varanasi"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Assigned Person</label>
+                  <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "आवंटित व्यक्ति" : "Assigned Person"}</label>
                   <input
                     type="text"
                     value={newTaskForm.assigned_to}
                     onChange={(e) => setNewTaskForm({ ...newTaskForm, assigned_to: e.target.value })}
-                    className="w-full px-2 py-1.5 border border-slate-300 rounded"
+                    className="w-full px-3 py-2 bg-white/[0.04] rounded-xl text-[#F2F4EF] border border-white/10 focus:outline-none focus:border-[#B7E300]/50"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Priority</label>
+                  <label className="font-semibold text-[#A7ADA8] block mb-1">{isHi ? "प्राथमिकता" : "Priority"}</label>
                   <select
                     value={newTaskForm.priority}
                     onChange={(e) => setNewTaskForm({ ...newTaskForm, priority: e.target.value })}
-                    className="w-full px-2 py-1.5 border border-slate-300 rounded"
+                    className="w-full px-3 py-2 bg-[#151919] border border-white/10 rounded-xl text-[#F2F4EF] focus:outline-none focus:border-[#B7E300]/50"
                   >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
+                    <option value="low">{isHi ? "निम्न" : "Low"}</option>
+                    <option value="medium">{isHi ? "मध्यम" : "Medium"}</option>
+                    <option value="high">{isHi ? "उच्च" : "High"}</option>
                   </select>
                 </div>
               </div>
-              <div className="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end space-x-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowNewTaskModal(false)}
-                  className="px-3 py-1.5 border border-slate-300 rounded text-slate-600"
+                  className="btn-secondary-cta px-4 py-1.5 text-xs cursor-pointer"
                 >
-                  Cancel
+                  {isHi ? "रद्द करें" : "Cancel"}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#0a2540] text-white font-semibold rounded hover:bg-[#1e3a5f]"
+                  className="btn-primary-cta px-5 py-1.5 text-xs cursor-pointer font-medium"
                 >
-                  Create Task
+                  {isHi ? "कार्य बनाएं" : "Create Task"}
                 </button>
               </div>
             </form>

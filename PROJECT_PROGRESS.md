@@ -19,7 +19,7 @@
 ## Live System Endpoints
 | Service | URL | Status | Details |
 | :--- | :--- | :--- | :--- |
-| **Public Live Tunnel** | `https://second-arrived-mails-mountain.trycloudflare.com` | 🟢 Online | Zero-password external access for jury & team testing |
+| **Public Live Tunnel** | `https://fine-create-properly-palestinian.trycloudflare.com` | 🟢 Online | Zero-password external access for jury & team testing |
 | **Frontend Web App** | `http://127.0.0.1:5173/` | 🟢 Online | React 19, TypeScript, Tailwind CSS v4, Recharts, Leaflet |
 | **Backend REST API** | `http://127.0.0.1:8000/` | 🟢 Online | Python 3.14, FastAPI, SQLAlchemy, SQLite/PostgreSQL |
 | **OpenAPI / Swagger** | `http://127.0.0.1:8000/docs` | 🟢 Online | Interactive API documentation for all 15 endpoints |
@@ -119,7 +119,34 @@
   - Validated zero data leakage between roles.
   - Verified HTTP 401/403 enforcement across all restricted endpoints.
 
+### Phase 9: Polished Visual Design, Bilingual (EN/HI) Localization & 3D Mouse Tracking
+- [x] **Government Research Visual System:**
+  - Designed clean, authoritative interface compliant with GIGW 3.0 principles.
+  - Professional color palette: White/slate-50 backgrounds, deep navy typography (`#0a2540`), restrained saffron highlights (`#d97706`), subtle emerald green accents (`#15803d`).
+  - Strict elimination of garish gradients, neon glows, oversized rounded borders, and generic AI-look.
+- [x] **Subtle 3D Mouse Tracking & Interactions (`Card3D.tsx`):**
+  - Hardware-accelerated CSS `perspective(1000px)` matrix transforms with restrained tilt ($4^\circ - 6^\circ$).
+  - Cursor-following specular radial spotlight highlight (`rgba(255, 255, 255, 0.45)`).
+  - Applied selectively to KPI cards, research paper cards, grant competition cards, and simulation results.
+  - Strict stability boundaries: Leaflet GIS map, interactive sliders, data tables, and AI chat streams kept flat for flawless precision.
+  - Touchscreen auto-detection (`hover: none`) and `@media (prefers-reduced-motion: reduce)` accessibility fallback.
+- [x] **Instant Bilingual Localization (English & Hindi):**
+  - Custom React `LanguageContext` with zero-reload instantaneous switching and `localStorage` persistence.
+  - 186 keys per language in `frontend/src/i18n/locales/en.json` and `hi.json` with 100% key parity across all 13 sections.
+  - Integration of Google Fonts: `Inter` and `Noto Sans Devanagari` for crisp glyph rendering.
+  - Prominent desktop masthead pill selector (`English | हिन्दी`) and mobile quick toggle (`EN | हिन्दी`).
+  - Preserved canonical official SIH dataset values, legal statutes, and research paper titles untranslated.
+- [x] **Multi-Device Responsiveness (360px to 1440px):**
+  - Mobile slide-over drawer with backdrop blur overlay and dismissal on tap.
+  - Single-column cards for mobile devices ($\le 390$px), 2-column grids for tablets ($768$px), and 3/4-column layouts for desktop ($\ge 1024$px).
+  - Touch-friendly tap targets ($\ge 44\times 44$px) and horizontal scrolling for data tables (`overflow-x-auto`).
+- [x] **Automated Verification Suites:**
+  - `backend/tests/test_bilingual_ui_audit.py`: **38 / 38 PASS (100%)**
+  - `backend/tests/test_role_dashboards.py`: **5 / 5 Roles PASS (100%)**
+  - `backend/tests/test_sih_demo_workflow.py`: **36 / 36 PASS (100%)**
+  - `UI_LANGUAGE_RESPONSIVENESS_TEST_REPORT.md`: Comprehensive audit document generated.
+
 ---
 
 ## Blockers & Risks
-- **None.** All 8 phases are fully implemented, verified with automated test suites, and serving live on the public tunnel.
+- **None.** All 9 phases are fully implemented, verified with automated test suites, and serving live on the public tunnel.
