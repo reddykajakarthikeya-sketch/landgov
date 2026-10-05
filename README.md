@@ -309,11 +309,12 @@ python -m pytest backend/tests/test_platform.py -v
 ### 2. Backend: Render Deployment Setup
 1. Create a **New Web Service** on [Render](https://render.com) connected to this repository (or use the provided `render.yaml`).
 2. Set configuration:
-   - **Root Directory:** (leave blank or set to repository root)
+   - **Root Directory:** `backend`
    - **Environment:** `Python 3`
-   - **Build Command:** `pip install -r backend/requirements.txt`
-   - **Start Command:** `cd backend && python -m app.seed_data && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `python -m app.seed_data && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 3. Add Environment Variables in Render:
+   - `PYTHON_VERSION`: `3.11.8`
    - `SECRET_KEY`: Set a secure random string (e.g. `openssl rand -hex 32`).
    - `FRONTEND_URL`: `https://reddykajakarthikeya-sketch.github.io`
    - `CORS_ORIGINS`: `https://reddykajakarthikeya-sketch.github.io,https://reddykajakarthikeya-sketch.github.io/landgov,http://localhost:5173,http://127.0.0.1:5173`
